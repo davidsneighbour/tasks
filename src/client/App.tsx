@@ -1,17 +1,18 @@
-import { Route, Routes } from "react-router";
-
-function Shell() {
-  return (
-    <main className="flex h-dvh items-center justify-center bg-background text-foreground">
-      <p className="text-sm text-muted-foreground">Tasks - application shell.</p>
-    </main>
-  );
-}
+import { Navigate, Route, Routes } from "react-router";
+import { TasksPage } from "@client/features/tasks/TasksPage";
+import { AppShell } from "@client/layouts/AppShell";
 
 export function App() {
   return (
     <Routes>
-      <Route path="/*" element={<Shell />} />
+      <Route element={<AppShell />}>
+        <Route index element={<Navigate to="/next" replace />} />
+        <Route path="next" element={<TasksPage view="next" title="Next" />} />
+        <Route path="overdue" element={<TasksPage view="overdue" title="Overdue" />} />
+        <Route path="all" element={<TasksPage view="all" title="All" />} />
+        <Route path="completed" element={<TasksPage view="completed" title="Completed" />} />
+        <Route path="lists/:gtId" element={<TasksPage title="Tasks" />} />
+      </Route>
     </Routes>
   );
 }

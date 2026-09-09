@@ -4,12 +4,14 @@ import Fastify from "fastify";
 import { statusRoutes } from "./api/status.js";
 import { syncRoutes } from "./api/sync.js";
 import { taskListsRoutes } from "./api/task-lists.js";
+import { tasksRoutes } from "./api/tasks.js";
 import { config, hasGoogleCredentials } from "./config/env.js";
 import { runSync } from "./sync/sync.js";
 
 const app = Fastify({ logger: true });
 
 await app.register(taskListsRoutes);
+await app.register(tasksRoutes);
 await app.register(statusRoutes);
 await app.register(syncRoutes);
 
