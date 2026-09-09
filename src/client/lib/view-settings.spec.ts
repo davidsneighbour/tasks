@@ -35,28 +35,36 @@ describe("view-settings", () => {
     vi.unstubAllGlobals();
   });
 
+  const DEFAULTS = { deadTasksThresholdDays: 28, theme: "system" };
+
   it("returns defaults when nothing is stored", () => {
-    expect(getViewSettings()).toEqual({ deadTasksThresholdDays: 28 });
+    expect(getViewSettings()).toEqual(DEFAULTS);
   });
 
   it("returns defaults when stored data is invalid JSON", () => {
     localStorage.setItem("tasks:view-settings", "{not json");
-    expect(getViewSettings()).toEqual({ deadTasksThresholdDays: 28 });
+    expect(getViewSettings()).toEqual(DEFAULTS);
   });
 
   it("returns defaults when stored data fails schema validation", () => {
     localStorage.setItem("tasks:view-settings", JSON.stringify({ deadTasksThresholdDays: -1 }));
-    expect(getViewSettings()).toEqual({ deadTasksThresholdDays: 28 });
+    expect(getViewSettings()).toEqual(DEFAULTS);
   });
 
   it("persists a partial update merged onto existing settings", () => {
     setViewSettings({ deadTasksThresholdDays: 14 });
-    expect(getViewSettings()).toEqual({ deadTasksThresholdDays: 14 });
+    expect(getViewSettings()).toEqual({ ...DEFAULTS, deadTasksThresholdDays: 14 });
+  });
+
+  it("persists the theme independently of other settings", () => {
+    setViewSettings({ deadTasksThresholdDays: 14 });
+    setViewSettings({ theme: "dark" });
+    expect(getViewSettings()).toEqual({ deadTasksThresholdDays: 14, theme: "dark" });
   });
 
   it("resets to defaults", () => {
-    setViewSettings({ deadTasksThresholdDays: 14 });
+    setViewSettings({ deadTasksThresholdDays: 14, theme: "dark" });
     resetViewSettings();
-    expect(getViewSettings()).toEqual({ deadTasksThresholdDays: 28 });
+    expect(getViewSettings()).toEqual(DEFAULTS);
   });
 });

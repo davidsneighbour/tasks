@@ -5,6 +5,7 @@ import { notifyViewSettingsChanged } from "./view-settings-events.js";
 // overdue threshold, etc.), so each feature doesn't invent its own local-storage key and shape.
 const ViewSettingsSchema = z.object({
   deadTasksThresholdDays: z.number().int().positive().default(28),
+  theme: z.enum(["system", "light", "dark"]).default("system"),
 });
 
 export type ViewSettings = z.infer<typeof ViewSettingsSchema>;

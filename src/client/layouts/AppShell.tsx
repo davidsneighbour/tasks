@@ -1,4 +1,4 @@
-import { CalendarClock, CheckCircle2, Circle, Ghost, ListTodo, Menu, RotateCcw, Settings, Star } from "lucide-react";
+import { CalendarClock, CheckCircle2, Circle, Ghost, ListTodo, Menu, Monitor, Moon, RotateCcw, Settings, Star, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { LabelBadge } from "@client/features/labels/LabelBadge";
@@ -6,9 +6,11 @@ import { SyncStatus } from "@client/features/sync/SyncStatus";
 import { getLabels, getTaskLists } from "@client/lib/api";
 import { onLabelsChanged } from "@client/lib/label-events";
 import { onSyncCompleted } from "@client/lib/sync-events";
+import { applyTheme } from "@client/lib/theme";
 import { useFetch } from "@client/lib/use-fetch";
 import { cn } from "@client/lib/utils";
-import { resetViewSettings } from "@client/lib/view-settings";
+import { type ViewSettings, getViewSettings, resetViewSettings, setViewSettings } from "@client/lib/view-settings";
+import { onViewSettingsChanged } from "@client/lib/view-settings-events";
 
 const BUILT_IN_VIEWS = [
   { to: "/next", label: "Next", icon: Circle },
@@ -18,6 +20,9 @@ const BUILT_IN_VIEWS = [
   { to: "/completed", label: "Completed", icon: CheckCircle2 },
   { to: "/dead", label: "Dead tasks", icon: Ghost },
 ];
+
+const THEME_ICONS = { system: Monitor, light: Sun, dark: Moon } as const;
+const NEXT_THEME: Record<ViewSettings["theme"], ViewSettings["theme"]> = { system: "light", light: "dark", dark: "system" };
 
 function navLinkClassName(isActive: boolean): string {
   return cn(
@@ -31,13 +36,34 @@ export function AppShell() {
   const taskListsState = useFetch(() => getTaskLists(), [refreshKey]);
   const labelsState = useFetch(() => getLabels(), [refreshKey]);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [theme, setTheme] = useState(() => getViewSettings().theme);
 
   useEffect(() => onLabelsChanged(() => setRefreshKey((key) => key + 1)), []);
   useEffect(() => onSyncCompleted(() => setRefreshKey((key) => key + 1)), []);
 
+  useEffect(() => {
+    const unsubscribe = onViewSettingsChanged(() => {
+      setTheme(getViewSettings().theme);
+      applyTheme();
+    });
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    media.addEventListener("change", applyTheme);
+    return () => {
+      unsubscribe();
+      media.removeEventListener("change", applyTheme);
+    };
+  }, []);
+
   function closeMobileNav() {
     setMobileNavOpen(false);
   }
+
+  function cycleTheme() {
+    setTheme(setViewSettings({ theme: NEXT_THEME[theme] }).theme);
+    applyTheme();
+  }
+
+  const ThemeIcon = THEME_ICONS[theme];
 
   return (
     <div className="flex h-dvh flex-col bg-background text-foreground md:grid md:grid-cols-[240px_1fr]">
@@ -131,6 +157,14 @@ export function AppShell() {
 
         <div className="mt-auto flex flex-col gap-2">
           <SyncStatus />
+          <button
+            type="button"
+            onClick={cycleTheme}
+            className="flex items-center gap-1.5 self-start px-2 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <ThemeIcon className="size-3.5" />
+            Theme: {theme}
+          </button>
           <button
             type="button"
             onClick={() => resetViewSettings()}

@@ -14,14 +14,16 @@
     --radius: 0.5rem;
   }
 
+  /* Dracula palette (https://draculatheme.com/contribute): background #282a36, current line
+     #44475a, foreground #f8f8f2, comment #6272a4, purple #bd93f9. */
   .dark {
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
-    --muted: 240 4% 16%;
-    --muted-foreground: 240 5% 65%;
-    --border: 240 4% 16%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 6% 10%;
+    --background: 231 15% 18%;
+    --foreground: 60 30% 96%;
+    --muted: 232 14% 31%;
+    --muted-foreground: 225 27% 51%;
+    --border: 232 14% 31%;
+    --primary: 265 89% 78%;
+    --primary-foreground: 231 15% 18%;
   }
 
   * {
