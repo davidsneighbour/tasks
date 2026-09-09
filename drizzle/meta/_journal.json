@@ -8,6 +8,13 @@
       "when": 1788914545841,
       "tag": "0000_premium_queen_noir",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1788916523344,
+      "tag": "0001_keen_carnage",
+      "breakpoints": true
     }
   ]
 }

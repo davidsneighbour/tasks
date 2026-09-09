@@ -1,6 +1,7 @@
 import { CheckCircle2, Circle } from "lucide-react";
 import type { TaskDTO } from "@shared/types";
 import { cn } from "@client/lib/utils";
+import { LabelBadge } from "@client/features/labels/LabelBadge";
 
 function formatDue(due: string | null): string | null {
   if (!due) return null;
@@ -33,9 +34,16 @@ export function TaskRow({ task, selected, onSelect, onToggleComplete, toggling }
       >
         {isCompleted ? <CheckCircle2 className="size-4" /> : <Circle className="size-4" />}
       </button>
-      <button type="button" onClick={onSelect} className="flex min-w-0 flex-1 flex-col text-left">
+      <button type="button" onClick={onSelect} className="flex min-w-0 flex-1 flex-col items-start text-left">
         <span className={cn("truncate", isCompleted && "text-muted-foreground line-through")}>{task.title}</span>
         {due && <span className="text-xs text-muted-foreground">{due}</span>}
+        {task.labels.length > 0 && (
+          <span className="mt-1 flex flex-wrap gap-1">
+            {task.labels.map((label) => (
+              <LabelBadge key={label.id} label={label} />
+            ))}
+          </span>
+        )}
       </button>
     </div>
   );

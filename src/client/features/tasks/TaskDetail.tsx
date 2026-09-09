@@ -1,17 +1,19 @@
 import type { TaskDTO } from "@shared/types";
 import { Button } from "@client/components/ui/button";
+import { LabelPicker } from "@client/features/labels/LabelPicker";
 
 export interface TaskDetailProps {
   task: TaskDTO;
   onClose: () => void;
   onDelete: () => void;
+  onLabelsChanged: () => void;
   deleting: boolean;
 }
 
-// Field editing (title/notes/due) is not wired yet - only status (via the row checkbox) and
-// delete are, since those are the mutations Phase 5 requires. Full inline editing can follow
-// the same remote-first pattern later without changing this panel's shape.
-export function TaskDetail({ task, onClose, onDelete, deleting }: TaskDetailProps) {
+// Field editing (title/notes/due) is not wired yet - only status (via the row checkbox),
+// labels, and delete are. Full inline editing can follow the same remote-first pattern later
+// without changing this panel's shape.
+export function TaskDetail({ task, onClose, onDelete, onLabelsChanged, deleting }: TaskDetailProps) {
   return (
     <aside className="w-80 shrink-0 border-l border-border p-4">
       <div className="flex items-center justify-between">
@@ -42,6 +44,13 @@ export function TaskDetail({ task, onClose, onDelete, deleting }: TaskDetailProp
         <div>
           <dt className="text-xs font-medium uppercase text-muted-foreground">Status</dt>
           <dd>{task.status === "completed" ? "Completed" : "Open"}</dd>
+        </div>
+
+        <div>
+          <dt className="mb-1 text-xs font-medium uppercase text-muted-foreground">Labels</dt>
+          <dd>
+            <LabelPicker taskGtId={task.gtId} currentLabels={task.labels} onChange={onLabelsChanged} />
+          </dd>
         </div>
       </dl>
 

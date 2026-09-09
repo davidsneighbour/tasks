@@ -83,7 +83,12 @@ export async function googleTasksRequest<T>(path: string, init: RequestInit = {}
     if (response.status === 429 || /rateLimitExceeded|quotaExceeded|userRateLimitExceeded/.test(body)) {
       throw new GoogleApiError("rate-limit", "Google Tasks API rate or quota limit exceeded.", response.status, body);
     }
-    throw new GoogleApiError("unexpected", `Google Tasks API request failed with status ${response.status}.`, response.status, body);
+    throw new GoogleApiError(
+      "unexpected",
+      `Google Tasks API request failed with status ${response.status}: ${body}`,
+      response.status,
+      body,
+    );
   }
 
   if (response.status === 204) {

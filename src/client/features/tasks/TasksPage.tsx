@@ -14,7 +14,8 @@ export interface TasksPageProps {
 const SELECTED_TASK_PARAM = "task";
 
 export function TasksPage({ view, title }: TasksPageProps) {
-  const { gtId: list } = useParams<{ gtId?: string }>();
+  const { gtId: list, labelId } = useParams<{ gtId?: string; labelId?: string }>();
+  const label = labelId ? Number(labelId) : undefined;
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedGtId = searchParams.get(SELECTED_TASK_PARAM);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -22,7 +23,12 @@ export function TasksPage({ view, title }: TasksPageProps) {
   const [deleting, setDeleting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  const state = useFetch(() => getTasks(list ? { list } : view ? { view } : {}), [view, list, refreshKey]);
+  const state = useFetch(() => {
+    if (list) return getTasks({ list });
+    if (label !== undefined) return getTasks({ label });
+    if (view) return getTasks({ view });
+    return getTasks({});
+  }, [view, list, label, refreshKey]);
 
   const selectedTask = useMemo(() => {
     if (state.status !== "ready" || !selectedGtId) return null;
@@ -73,10 +79,12 @@ export function TasksPage({ view, title }: TasksPageProps) {
     }
   }
 
+  const pageTitle = list || label !== undefined ? "Tasks" : title;
+
   return (
     <div className="flex h-full gap-6">
       <div className="min-w-0 flex-1">
-        <h1 className="mb-4 text-lg font-semibold">{list ? "Tasks" : title}</h1>
+        <h1 className="mb-4 text-lg font-semibold">{pageTitle}</h1>
 
         {list && <QuickCreate taskListGtId={list} onCreated={refresh} />}
         {actionError && <p className="mb-2 text-sm text-red-600 dark:text-red-400">{actionError}</p>}
@@ -103,7 +111,13 @@ export function TasksPage({ view, title }: TasksPageProps) {
       </div>
 
       {selectedTask && (
-        <TaskDetail task={selectedTask} onClose={closeDetail} onDelete={handleDelete} deleting={deleting} />
+        <TaskDetail
+          task={selectedTask}
+          onClose={closeDetail}
+          onDelete={handleDelete}
+          onLabelsChanged={refresh}
+          deleting={deleting}
+        />
       )}
     </div>
   );

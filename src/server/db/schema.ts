@@ -1,4 +1,5 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { LABEL_COLOURS, LABEL_ICON_NAMES } from "../../shared/labels.js";
 
 // GT cache tables (plan.md section 8): local mirror of remote entities only. T-specific
 // extensions (labels, stars, ...) live in their own tables, introduced in later phases,
@@ -30,6 +31,32 @@ export const tasks = sqliteTable("tasks", {
   gtUpdatedAt: text("gt_updated_at").notNull(),
   syncedAt: text("synced_at").notNull(),
 });
+
+// T-specific extension (plan.md section 9): keyed to the immutable GT task id, not GT's own
+// data. Deleting a label never touches GT; deleting a task's GT cache row cascades here.
+
+export const labels = sqliteTable("labels", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  colour: text("colour", { enum: LABEL_COLOURS }).notNull(),
+  icon: text("icon", { enum: LABEL_ICON_NAMES }).notNull(),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
+export const taskLabels = sqliteTable(
+  "task_labels",
+  {
+    taskGtId: text("task_gt_id")
+      .notNull()
+      .references(() => tasks.gtId, { onDelete: "cascade" }),
+    labelId: integer("label_id")
+      .notNull()
+      .references(() => labels.id, { onDelete: "cascade" }),
+    createdAt: text("created_at").notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.taskGtId, table.labelId] })],
+);
 
 // Singleton row (id = 1) tracking the last full reconciliation (plan.md section 46).
 export const syncState = sqliteTable("sync_state", {

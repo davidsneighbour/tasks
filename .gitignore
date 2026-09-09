@@ -5,6 +5,7 @@ data/*.sqlite
 data/*.sqlite-*
 .env
 *.local
+client_secret*.json
 
 # editor
 .vscode/*

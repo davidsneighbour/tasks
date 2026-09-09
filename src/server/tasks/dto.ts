@@ -1,4 +1,4 @@
-import type { TaskDTO } from "../../shared/types.js";
+import type { LabelDTO, TaskDTO } from "../../shared/types.js";
 
 export interface TaskDTOSource {
   gtId: string;
@@ -12,7 +12,7 @@ export interface TaskDTOSource {
   position: string;
 }
 
-export function toTaskDTO(row: TaskDTOSource): TaskDTO {
+export function toTaskDTO(row: TaskDTOSource, labels: LabelDTO[] = []): TaskDTO {
   return {
     gtId: row.gtId,
     gtTaskListId: row.gtTaskListId,
@@ -23,5 +23,6 @@ export function toTaskDTO(row: TaskDTOSource): TaskDTO {
     due: row.due,
     completedAt: row.completedAt,
     position: row.position,
+    labels,
   };
 }

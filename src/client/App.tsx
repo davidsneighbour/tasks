@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router";
+import { LabelManager } from "@client/features/labels/LabelManager";
 import { TasksPage } from "@client/features/tasks/TasksPage";
 import { AppShell } from "@client/layouts/AppShell";
 
@@ -12,6 +13,8 @@ export function App() {
         <Route path="all" element={<TasksPage view="all" title="All" />} />
         <Route path="completed" element={<TasksPage view="completed" title="Completed" />} />
         <Route path="lists/:gtId" element={<TasksPage title="Tasks" />} />
+        <Route path="labels" element={<LabelManager />} />
+        <Route path="labels/:labelId" element={<TasksPage title="Tasks" />} />
       </Route>
     </Routes>
   );

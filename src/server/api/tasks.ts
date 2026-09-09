@@ -4,10 +4,12 @@ import { z } from "zod";
 import { db } from "../db/client.js";
 import { tasks } from "../db/schema.js";
 import { GoogleApiError, MissingGoogleCredentialsError, httpStatusForGoogleApiError } from "../google/index.js";
+import { getLabelsForTasks } from "../labels/label-service.js";
 import * as taskService from "../tasks/task-service.js";
 import { toTaskDTO } from "../tasks/dto.js";
 import { getAllTasks } from "../views/all.js";
 import { getCompletedTasks } from "../views/completed.js";
+import { getTasksByLabel } from "../views/label.js";
 import { getNextTasks } from "../views/next.js";
 import { getOverdueTasks } from "../views/overdue.js";
 
@@ -23,6 +25,7 @@ const VIEW_LOADERS: Record<string, () => Promise<TaskRow[]>> = {
 interface TasksQuery {
   view?: string;
   list?: string;
+  label?: string;
 }
 
 const createTaskSchema = z.object({
@@ -66,11 +69,23 @@ function sendTaskServiceError(reply: FastifyReply, error: unknown): void {
 // to tasks/task-service.ts (plan.md sections 22-25, 63).
 export async function tasksRoutes(app: FastifyInstance) {
   app.get<{ Querystring: TasksQuery }>("/api/tasks", async (request, reply) => {
-    const { view, list } = request.query;
+    const { view, list, label } = request.query;
 
     if (list) {
       const rows = await db.select().from(tasks).where(eq(tasks.gtTaskListId, list)).orderBy(asc(tasks.position));
-      return { tasks: rows.map(toTaskDTO) };
+      const labelsByTask = await getLabelsForTasks(rows.map((row) => row.gtId));
+      return { tasks: rows.map((row) => toTaskDTO(row, labelsByTask.get(row.gtId))) };
+    }
+
+    if (label) {
+      const labelId = Number(label);
+      if (!Number.isInteger(labelId)) {
+        reply.code(400).send({ error: "validation", message: `Invalid label id "${label}".` });
+        return;
+      }
+      const rows = await getTasksByLabel(labelId);
+      const labelsByTask = await getLabelsForTasks(rows.map((row) => row.gtId));
+      return { tasks: rows.map((row) => toTaskDTO(row, labelsByTask.get(row.gtId))) };
     }
 
     const loader = VIEW_LOADERS[view ?? "all"];
@@ -80,7 +95,8 @@ export async function tasksRoutes(app: FastifyInstance) {
     }
 
     const rows = await loader();
-    return { tasks: rows.map(toTaskDTO) };
+    const labelsByTask = await getLabelsForTasks(rows.map((row) => row.gtId));
+    return { tasks: rows.map((row) => toTaskDTO(row, labelsByTask.get(row.gtId))) };
   });
 
   app.post("/api/tasks", async (request, reply) => {

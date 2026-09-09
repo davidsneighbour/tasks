@@ -3,6 +3,7 @@ import type { TaskDTO } from "../../shared/types.js";
 import { db } from "../db/client.js";
 import { tasks } from "../db/schema.js";
 import { googleTasksClient, type GoogleTask } from "../google/index.js";
+import { getLabelsForTasks } from "../labels/label-service.js";
 import { mapGoogleTask } from "../sync/reconciliation.js";
 import { toTaskDTO } from "./dto.js";
 
@@ -47,7 +48,8 @@ async function applyGoogleTask(taskListGtId: string, googleTask: GoogleTask): Pr
     await db.update(tasks).set({ ...fields, syncedAt }).where(eq(tasks.gtId, gtId));
   }
 
-  return toTaskDTO(mapped);
+  const labelsByTask = await getLabelsForTasks([mapped.gtId]);
+  return toTaskDTO(mapped, labelsByTask.get(mapped.gtId));
 }
 
 export interface CreateTaskInput {
