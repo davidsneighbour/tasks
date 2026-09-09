@@ -19,9 +19,23 @@ The full design — data model, synchronisation model, sync locking, API structu
 
 ## Current repository state
 
-As of this writing, the repository contains only this planning document — no `package.json`, source tree, tests, or CI have been scaffolded yet, and there are no commits. There are therefore no established build, test, lint, or commit-message conventions to follow yet.
+The project is scaffolded: TypeScript, React, Vite, Fastify (server), Drizzle (SQLite), ESLint, and Vitest/Playwright are in place, following the stack described in `scratch/plan.md`. There is no CI configured yet.
 
-When scaffolding the project for the first time, follow the stack and architecture described in `scratch/plan.md`. Once real tooling exists (package manager, test runner, linter, CI), this file and `.agents/instructions/` should be updated to document those conventions rather than leaving agents to guess or re-derive them each session.
+Key npm scripts (see `package.json` for the full list):
+
+* `npm run dev` — run client and server together for local development (runs DB migrations first).
+* `npm run check` — lint and type-check; run this before considering a change done.
+* `npm test` — Vitest unit tests; `npm run test:e2e` — Playwright end-to-end tests.
+* `npm run db:generate` / `npm run db:migrate` — Drizzle schema and migrations.
+
+Conventions:
+
+* Strict TypeScript (`strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` all on) — keep new code compatible with these settings.
+* ESM throughout (`"type": "module"`).
+* Node `>=20` (see `engines` in `package.json`).
+* Commit messages follow Conventional Commits (see `git log`).
+
+There are no established commit-message scope conventions beyond Conventional Commits, and no CI pipeline yet. When either is added, update this section and `.agents/instructions/` accordingly rather than leaving agents to guess.
 
 ## Agent-specific files
 
