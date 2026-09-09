@@ -1,0 +1,21 @@
+node_modules/
+dist/
+dist-ssr/
+data/*.sqlite
+data/*.sqlite-*
+.env
+*.local
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# logs
+npm-debug.log*
+*.log
+
+# test artifacts
+coverage/
+playwright-report/
+test-results/
