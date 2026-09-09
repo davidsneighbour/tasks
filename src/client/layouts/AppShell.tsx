@@ -1,4 +1,4 @@
-import { CalendarClock, CheckCircle2, Circle, ListTodo, Settings } from "lucide-react";
+import { CalendarClock, CheckCircle2, Circle, ListTodo, Settings, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { LabelBadge } from "@client/features/labels/LabelBadge";
@@ -10,6 +10,7 @@ import { cn } from "@client/lib/utils";
 const BUILT_IN_VIEWS = [
   { to: "/next", label: "Next", icon: Circle },
   { to: "/overdue", label: "Overdue", icon: CalendarClock },
+  { to: "/starred", label: "Starred", icon: Star },
   { to: "/all", label: "All", icon: ListTodo },
   { to: "/completed", label: "Completed", icon: CheckCircle2 },
 ];

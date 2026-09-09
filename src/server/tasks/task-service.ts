@@ -4,6 +4,7 @@ import { db } from "../db/client.js";
 import { tasks } from "../db/schema.js";
 import { googleTasksClient, type GoogleTask } from "../google/index.js";
 import { getLabelsForTasks } from "../labels/label-service.js";
+import { getStarsForTasks } from "../stars/star-service.js";
 import { mapGoogleTask } from "../sync/reconciliation.js";
 import { toTaskDTO } from "./dto.js";
 
@@ -48,8 +49,11 @@ async function applyGoogleTask(taskListGtId: string, googleTask: GoogleTask): Pr
     await db.update(tasks).set({ ...fields, syncedAt }).where(eq(tasks.gtId, gtId));
   }
 
-  const labelsByTask = await getLabelsForTasks([mapped.gtId]);
-  return toTaskDTO(mapped, labelsByTask.get(mapped.gtId));
+  const [labelsByTask, starsByTask] = await Promise.all([
+    getLabelsForTasks([mapped.gtId]),
+    getStarsForTasks([mapped.gtId]),
+  ]);
+  return toTaskDTO(mapped, labelsByTask.get(mapped.gtId), starsByTask.get(mapped.gtId) ?? null);
 }
 
 export interface CreateTaskInput {

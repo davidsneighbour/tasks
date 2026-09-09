@@ -1,7 +1,8 @@
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle2, Circle, Star } from "lucide-react";
 import type { TaskDTO } from "@shared/types";
-import { cn } from "@client/lib/utils";
 import { LabelBadge } from "@client/features/labels/LabelBadge";
+import { STAR_COLOUR_CLASSES, STAR_LABELS } from "@client/lib/star-colors";
+import { cn } from "@client/lib/utils";
 
 function formatDue(due: string | null): string | null {
   if (!due) return null;
@@ -18,7 +19,8 @@ export interface TaskRowProps {
 
 // The checkbox and the row body are separate buttons: clicking the checkbox completes/reopens
 // the task (Phase 5, remote-first via the server), clicking the row opens the read-only
-// detail panel from Phase 4.
+// detail panel from Phase 4. Row layout follows plan.md section 36: checkbox, title, star on
+// the first line; due date; labels.
 export function TaskRow({ task, selected, onSelect, onToggleComplete, toggling }: TaskRowProps) {
   const due = formatDue(task.due);
   const isCompleted = task.status === "completed";
@@ -35,7 +37,15 @@ export function TaskRow({ task, selected, onSelect, onToggleComplete, toggling }
         {isCompleted ? <CheckCircle2 className="size-4" /> : <Circle className="size-4" />}
       </button>
       <button type="button" onClick={onSelect} className="flex min-w-0 flex-1 flex-col items-start text-left">
-        <span className={cn("truncate", isCompleted && "text-muted-foreground line-through")}>{task.title}</span>
+        <span className="flex w-full items-center gap-2">
+          <span className={cn("truncate", isCompleted && "text-muted-foreground line-through")}>{task.title}</span>
+          {task.star && (
+            <Star
+              className={cn("ml-auto size-3.5 shrink-0", STAR_COLOUR_CLASSES[task.star])}
+              aria-label={STAR_LABELS[task.star]}
+            />
+          )}
+        </span>
         {due && <span className="text-xs text-muted-foreground">{due}</span>}
         {task.labels.length > 0 && (
           <span className="mt-1 flex flex-wrap gap-1">

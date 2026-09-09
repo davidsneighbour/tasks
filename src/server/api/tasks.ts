@@ -1,10 +1,12 @@
 import { asc, eq } from "drizzle-orm";
 import type { FastifyInstance, FastifyReply } from "fastify";
 import { z } from "zod";
+import { STAR_TYPES } from "../../shared/stars.js";
 import { db } from "../db/client.js";
 import { tasks } from "../db/schema.js";
 import { GoogleApiError, MissingGoogleCredentialsError, httpStatusForGoogleApiError } from "../google/index.js";
 import { getLabelsForTasks } from "../labels/label-service.js";
+import { getStarsForTasks } from "../stars/star-service.js";
 import * as taskService from "../tasks/task-service.js";
 import { toTaskDTO } from "../tasks/dto.js";
 import { getAllTasks } from "../views/all.js";
@@ -12,6 +14,7 @@ import { getCompletedTasks } from "../views/completed.js";
 import { getTasksByLabel } from "../views/label.js";
 import { getNextTasks } from "../views/next.js";
 import { getOverdueTasks } from "../views/overdue.js";
+import { getStarredTasks } from "../views/starred.js";
 
 type TaskRow = typeof tasks.$inferSelect;
 
@@ -20,12 +23,14 @@ const VIEW_LOADERS: Record<string, () => Promise<TaskRow[]>> = {
   completed: getCompletedTasks,
   next: getNextTasks,
   overdue: getOverdueTasks,
+  starred: () => getStarredTasks(),
 };
 
 interface TasksQuery {
   view?: string;
   list?: string;
   label?: string;
+  star?: string;
 }
 
 const createTaskSchema = z.object({
@@ -64,17 +69,22 @@ function sendTaskServiceError(reply: FastifyReply, error: unknown): void {
   throw error;
 }
 
+async function attachExtras(rows: TaskRow[]) {
+  const gtIds = rows.map((row) => row.gtId);
+  const [labelsByTask, starsByTask] = await Promise.all([getLabelsForTasks(gtIds), getStarsForTasks(gtIds)]);
+  return rows.map((row) => toTaskDTO(row, labelsByTask.get(row.gtId), starsByTask.get(row.gtId) ?? null));
+}
+
 // Reads go straight to the SQLite cache, never to Google directly (plan.md's whole point of
 // a local mirror "for fast rendering and filtering"). Mutations are remote-first, delegated
 // to tasks/task-service.ts (plan.md sections 22-25, 63).
 export async function tasksRoutes(app: FastifyInstance) {
   app.get<{ Querystring: TasksQuery }>("/api/tasks", async (request, reply) => {
-    const { view, list, label } = request.query;
+    const { view, list, label, star } = request.query;
 
     if (list) {
       const rows = await db.select().from(tasks).where(eq(tasks.gtTaskListId, list)).orderBy(asc(tasks.position));
-      const labelsByTask = await getLabelsForTasks(rows.map((row) => row.gtId));
-      return { tasks: rows.map((row) => toTaskDTO(row, labelsByTask.get(row.gtId))) };
+      return { tasks: await attachExtras(rows) };
     }
 
     if (label) {
@@ -84,8 +94,16 @@ export async function tasksRoutes(app: FastifyInstance) {
         return;
       }
       const rows = await getTasksByLabel(labelId);
-      const labelsByTask = await getLabelsForTasks(rows.map((row) => row.gtId));
-      return { tasks: rows.map((row) => toTaskDTO(row, labelsByTask.get(row.gtId))) };
+      return { tasks: await attachExtras(rows) };
+    }
+
+    if (star) {
+      if (!STAR_TYPES.includes(star as (typeof STAR_TYPES)[number])) {
+        reply.code(400).send({ error: "validation", message: `Invalid star type "${star}".` });
+        return;
+      }
+      const rows = await getStarredTasks(star as (typeof STAR_TYPES)[number]);
+      return { tasks: await attachExtras(rows) };
     }
 
     const loader = VIEW_LOADERS[view ?? "all"];
@@ -95,8 +113,7 @@ export async function tasksRoutes(app: FastifyInstance) {
     }
 
     const rows = await loader();
-    const labelsByTask = await getLabelsForTasks(rows.map((row) => row.gtId));
-    return { tasks: rows.map((row) => toTaskDTO(row, labelsByTask.get(row.gtId))) };
+    return { tasks: await attachExtras(rows) };
   });
 
   app.post("/api/tasks", async (request, reply) => {

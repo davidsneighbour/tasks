@@ -115,7 +115,7 @@ export function TasksPage({ view, title }: TasksPageProps) {
           task={selectedTask}
           onClose={closeDetail}
           onDelete={handleDelete}
-          onLabelsChanged={refresh}
+          onChanged={refresh}
           deleting={deleting}
         />
       )}

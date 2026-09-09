@@ -1,4 +1,5 @@
 import type { LabelColour, LabelIconName } from "@shared/labels";
+import type { StarType } from "@shared/stars";
 import type { LabelDTO, StatusResponse, TaskDTO, TaskListDTO } from "@shared/types";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -29,11 +30,14 @@ export function getTaskLists(): Promise<{ taskLists: TaskListDTO[] }> {
   return request("/api/task-lists");
 }
 
-export function getTasks(params: { view?: string; list?: string; label?: number } = {}): Promise<{ tasks: TaskDTO[] }> {
+export function getTasks(
+  params: { view?: string; list?: string; label?: number; star?: StarType } = {},
+): Promise<{ tasks: TaskDTO[] }> {
   const search = new URLSearchParams();
   if (params.view) search.set("view", params.view);
   if (params.list) search.set("list", params.list);
   if (params.label !== undefined) search.set("label", String(params.label));
+  if (params.star) search.set("star", params.star);
   const query = search.toString();
   return request(`/api/tasks${query ? `?${query}` : ""}`);
 }
@@ -94,4 +98,12 @@ export function setTaskLabels(gtId: string, labelIds: number[]): Promise<{ label
     method: "PUT",
     body: JSON.stringify({ labelIds }),
   });
+}
+
+export function setTaskStar(gtId: string, star: StarType): Promise<{ star: StarType }> {
+  return request(`/api/tasks/${encodeURIComponent(gtId)}/star`, { method: "PUT", body: JSON.stringify({ star }) });
+}
+
+export function removeTaskStar(gtId: string): Promise<void> {
+  return request(`/api/tasks/${encodeURIComponent(gtId)}/star`, { method: "DELETE" });
 }

@@ -1,5 +1,6 @@
 import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { LABEL_COLOURS, LABEL_ICON_NAMES } from "../../shared/labels.js";
+import { STAR_TYPES } from "../../shared/stars.js";
 
 // GT cache tables (plan.md section 8): local mirror of remote entities only. T-specific
 // extensions (labels, stars, ...) live in their own tables, introduced in later phases,
@@ -57,6 +58,16 @@ export const taskLabels = sqliteTable(
   },
   (table) => [primaryKey({ columns: [table.taskGtId, table.labelId] })],
 );
+
+// One optional star per task (plan.md section 10) - a single row keyed directly by the GT
+// task id, not several boolean columns. No row means no star.
+export const taskStars = sqliteTable("task_stars", {
+  taskGtId: text("task_gt_id")
+    .primaryKey()
+    .references(() => tasks.gtId, { onDelete: "cascade" }),
+  star: text("star", { enum: STAR_TYPES }).notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
 
 // Singleton row (id = 1) tracking the last full reconciliation (plan.md section 46).
 export const syncState = sqliteTable("sync_state", {

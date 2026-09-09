@@ -1,4 +1,5 @@
 import type { LabelColour, LabelIconName } from "./labels.js";
+import type { StarType } from "./stars.js";
 
 // Types shared between src/client and src/server for the T API (plan.md section 30). The
 // server never exposes raw Google Tasks or internal row shapes across this boundary.
@@ -26,6 +27,7 @@ export interface TaskDTO {
   completedAt: string | null;
   position: string;
   labels: LabelDTO[];
+  star: StarType | null;
 }
 
 export type BuiltInView = "all" | "completed" | "next" | "overdue";

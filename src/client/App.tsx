@@ -10,6 +10,7 @@ export function App() {
         <Route index element={<Navigate to="/next" replace />} />
         <Route path="next" element={<TasksPage view="next" title="Next" />} />
         <Route path="overdue" element={<TasksPage view="overdue" title="Overdue" />} />
+        <Route path="starred" element={<TasksPage view="starred" title="Starred" />} />
         <Route path="all" element={<TasksPage view="all" title="All" />} />
         <Route path="completed" element={<TasksPage view="completed" title="Completed" />} />
         <Route path="lists/:gtId" element={<TasksPage title="Tasks" />} />

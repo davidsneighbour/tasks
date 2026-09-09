@@ -3,6 +3,7 @@ import fastifyStatic from "@fastify/static";
 import Fastify from "fastify";
 import { labelsRoutes } from "./api/labels.js";
 import { statusRoutes } from "./api/status.js";
+import { starsRoutes } from "./api/stars.js";
 import { syncRoutes } from "./api/sync.js";
 import { taskListsRoutes } from "./api/task-lists.js";
 import { tasksRoutes } from "./api/tasks.js";
@@ -14,6 +15,7 @@ const app = Fastify({ logger: true });
 await app.register(taskListsRoutes);
 await app.register(tasksRoutes);
 await app.register(labelsRoutes);
+await app.register(starsRoutes);
 await app.register(statusRoutes);
 await app.register(syncRoutes);
 

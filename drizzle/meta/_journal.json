@@ -15,6 +15,13 @@
       "when": 1788916523344,
       "tag": "0001_keen_carnage",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1788924916542,
+      "tag": "0002_safe_squirrel_girl",
+      "breakpoints": true
     }
   ]
 }

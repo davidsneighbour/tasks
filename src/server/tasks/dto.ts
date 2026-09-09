@@ -1,3 +1,4 @@
+import type { StarType } from "../../shared/stars.js";
 import type { LabelDTO, TaskDTO } from "../../shared/types.js";
 
 export interface TaskDTOSource {
@@ -12,7 +13,7 @@ export interface TaskDTOSource {
   position: string;
 }
 
-export function toTaskDTO(row: TaskDTOSource, labels: LabelDTO[] = []): TaskDTO {
+export function toTaskDTO(row: TaskDTOSource, labels: LabelDTO[] = [], star: StarType | null = null): TaskDTO {
   return {
     gtId: row.gtId,
     gtTaskListId: row.gtTaskListId,
@@ -24,5 +25,6 @@ export function toTaskDTO(row: TaskDTOSource, labels: LabelDTO[] = []): TaskDTO 
     completedAt: row.completedAt,
     position: row.position,
     labels,
+    star,
   };
 }
