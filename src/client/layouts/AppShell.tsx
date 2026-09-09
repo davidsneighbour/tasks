@@ -1,4 +1,4 @@
-import { CalendarClock, CheckCircle2, Circle, ListTodo, Menu, Settings, Star } from "lucide-react";
+import { CalendarClock, CheckCircle2, Circle, ListTodo, Menu, RotateCcw, Settings, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { LabelBadge } from "@client/features/labels/LabelBadge";
@@ -8,6 +8,7 @@ import { onLabelsChanged } from "@client/lib/label-events";
 import { onSyncCompleted } from "@client/lib/sync-events";
 import { useFetch } from "@client/lib/use-fetch";
 import { cn } from "@client/lib/utils";
+import { resetViewSettings } from "@client/lib/view-settings";
 
 const BUILT_IN_VIEWS = [
   { to: "/next", label: "Next", icon: Circle },
@@ -127,8 +128,16 @@ export function AppShell() {
           </nav>
         </div>
 
-        <div className="mt-auto">
+        <div className="mt-auto flex flex-col gap-2">
           <SyncStatus />
+          <button
+            type="button"
+            onClick={() => resetViewSettings()}
+            className="flex items-center gap-1.5 self-start px-2 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <RotateCcw className="size-3.5" />
+            Reset view settings
+          </button>
         </div>
       </aside>
 
