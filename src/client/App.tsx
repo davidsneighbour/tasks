@@ -13,6 +13,7 @@ export function App() {
         <Route path="starred" element={<TasksPage view="starred" title="Starred" />} />
         <Route path="all" element={<TasksPage view="all" title="All" />} />
         <Route path="completed" element={<TasksPage view="completed" title="Completed" />} />
+        <Route path="dead" element={<TasksPage view="dead" title="Dead tasks" />} />
         <Route path="lists/:gtId" element={<TasksPage title="Tasks" />} />
         <Route path="labels" element={<LabelManager />} />
         <Route path="labels/:labelId" element={<TasksPage title="Tasks" />} />

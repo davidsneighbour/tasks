@@ -1,4 +1,4 @@
-import { CalendarClock, CheckCircle2, Circle, ListTodo, Menu, RotateCcw, Settings, Star } from "lucide-react";
+import { CalendarClock, CheckCircle2, Circle, Ghost, ListTodo, Menu, RotateCcw, Settings, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { LabelBadge } from "@client/features/labels/LabelBadge";
@@ -16,6 +16,7 @@ const BUILT_IN_VIEWS = [
   { to: "/starred", label: "Starred", icon: Star },
   { to: "/all", label: "All", icon: ListTodo },
   { to: "/completed", label: "Completed", icon: CheckCircle2 },
+  { to: "/dead", label: "Dead tasks", icon: Ghost },
 ];
 
 function navLinkClassName(isActive: boolean): string {

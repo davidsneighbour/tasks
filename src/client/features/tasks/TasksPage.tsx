@@ -3,6 +3,8 @@ import { useParams, useSearchParams } from "react-router";
 import { completeTask, deleteTask, getTasks, reopenTask } from "@client/lib/api";
 import { onSyncCompleted } from "@client/lib/sync-events";
 import { useFetch } from "@client/lib/use-fetch";
+import { getViewSettings, setViewSettings } from "@client/lib/view-settings";
+import { onViewSettingsChanged } from "@client/lib/view-settings-events";
 import { QuickCreate } from "./QuickCreate";
 import { TaskDetail } from "./TaskDetail";
 import { TaskRow } from "./TaskRow";
@@ -23,13 +25,25 @@ export function TasksPage({ view, title }: TasksPageProps) {
   const [togglingGtId, setTogglingGtId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const isDeadView = view === "dead";
+  const [deadTasksThresholdDays, setDeadTasksThresholdDays] = useState(() => getViewSettings().deadTasksThresholdDays);
+
+  useEffect(() => {
+    if (!isDeadView) return;
+    return onViewSettingsChanged(() => setDeadTasksThresholdDays(getViewSettings().deadTasksThresholdDays));
+  }, [isDeadView]);
+
+  function updateDeadTasksThreshold(days: number) {
+    setDeadTasksThresholdDays(setViewSettings({ deadTasksThresholdDays: days }).deadTasksThresholdDays);
+  }
 
   const state = useFetch(() => {
     if (list) return getTasks({ list });
     if (label !== undefined) return getTasks({ label });
+    if (isDeadView) return getTasks({ view, thresholdDays: deadTasksThresholdDays });
     if (view) return getTasks({ view });
     return getTasks({});
-  }, [view, list, label, refreshKey]);
+  }, [view, list, label, refreshKey, isDeadView, deadTasksThresholdDays]);
 
   const selectedTask = useMemo(() => {
     if (state.status !== "ready" || !selectedGtId) return null;
@@ -88,6 +102,23 @@ export function TasksPage({ view, title }: TasksPageProps) {
     <div className="flex h-full flex-col gap-6 md:flex-row">
       <div className="min-w-0 flex-1">
         <h1 className="mb-4 text-lg font-semibold">{pageTitle}</h1>
+
+        {isDeadView && (
+          <label className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+            Overdue by more than
+            <input
+              type="number"
+              min={1}
+              value={deadTasksThresholdDays}
+              onChange={(event) => {
+                const days = Number(event.target.value);
+                if (Number.isInteger(days) && days > 0) updateDeadTasksThreshold(days);
+              }}
+              className="w-16 rounded-md border border-border bg-background px-2 py-1 text-foreground"
+            />
+            days
+          </label>
+        )}
 
         {list && <QuickCreate taskListGtId={list} onCreated={refresh} />}
         {actionError && <p className="mb-2 text-sm text-red-600 dark:text-red-400">{actionError}</p>}

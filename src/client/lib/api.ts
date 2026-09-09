@@ -41,13 +41,14 @@ export function getTaskLists(): Promise<{ taskLists: TaskListDTO[] }> {
 }
 
 export function getTasks(
-  params: { view?: string; list?: string; label?: number; star?: StarType } = {},
+  params: { view?: string; list?: string; label?: number; star?: StarType; thresholdDays?: number } = {},
 ): Promise<{ tasks: TaskDTO[] }> {
   const search = new URLSearchParams();
   if (params.view) search.set("view", params.view);
   if (params.list) search.set("list", params.list);
   if (params.label !== undefined) search.set("label", String(params.label));
   if (params.star) search.set("star", params.star);
+  if (params.thresholdDays !== undefined) search.set("thresholdDays", String(params.thresholdDays));
   const query = search.toString();
   return request(`/api/tasks${query ? `?${query}` : ""}`);
 }

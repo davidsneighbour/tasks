@@ -11,6 +11,7 @@ import * as taskService from "../tasks/task-service.js";
 import { toTaskDTO } from "../tasks/dto.js";
 import { getAllTasks } from "../views/all.js";
 import { getCompletedTasks } from "../views/completed.js";
+import { getDeadTasks } from "../views/dead.js";
 import { getTasksByLabel } from "../views/label.js";
 import { getNextTasks } from "../views/next.js";
 import { getOverdueTasks } from "../views/overdue.js";
@@ -31,6 +32,7 @@ interface TasksQuery {
   list?: string;
   label?: string;
   star?: string;
+  thresholdDays?: string;
 }
 
 const createTaskSchema = z.object({
@@ -80,7 +82,20 @@ async function attachExtras(rows: TaskRow[]) {
 // to tasks/task-service.ts (plan.md sections 22-25, 63).
 export async function tasksRoutes(app: FastifyInstance) {
   app.get<{ Querystring: TasksQuery }>("/api/tasks", async (request, reply) => {
-    const { view, list, label, star } = request.query;
+    const { view, list, label, star, thresholdDays } = request.query;
+
+    if (view === "dead") {
+      let threshold: number | undefined;
+      if (thresholdDays !== undefined) {
+        threshold = Number(thresholdDays);
+        if (!Number.isInteger(threshold) || threshold <= 0) {
+          reply.code(400).send({ error: "validation", message: `Invalid thresholdDays "${thresholdDays}".` });
+          return;
+        }
+      }
+      const rows = await getDeadTasks(threshold);
+      return { tasks: await attachExtras(rows) };
+    }
 
     if (list) {
       const rows = await db.select().from(tasks).where(eq(tasks.gtTaskListId, list)).orderBy(asc(tasks.position));
