@@ -16,7 +16,7 @@ export interface TaskDetailProps {
 // later without changing this panel's shape.
 export function TaskDetail({ task, onClose, onDelete, onChanged, deleting }: TaskDetailProps) {
   return (
-    <aside className="w-80 shrink-0 border-l border-border p-4">
+    <aside className="shrink-0 border-t border-border p-4 md:w-80 md:border-l md:border-t-0">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold">Task details</h2>
         <button type="button" onClick={onClose} className="text-sm text-muted-foreground hover:text-foreground">

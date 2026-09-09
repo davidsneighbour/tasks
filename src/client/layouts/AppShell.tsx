@@ -1,9 +1,11 @@
-import { CalendarClock, CheckCircle2, Circle, ListTodo, Settings, Star } from "lucide-react";
+import { CalendarClock, CheckCircle2, Circle, ListTodo, Menu, Settings, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { LabelBadge } from "@client/features/labels/LabelBadge";
+import { SyncStatus } from "@client/features/sync/SyncStatus";
 import { getLabels, getTaskLists } from "@client/lib/api";
 import { onLabelsChanged } from "@client/lib/label-events";
+import { onSyncCompleted } from "@client/lib/sync-events";
 import { useFetch } from "@client/lib/use-fetch";
 import { cn } from "@client/lib/utils";
 
@@ -23,20 +25,47 @@ function navLinkClassName(isActive: boolean): string {
 }
 
 export function AppShell() {
-  const taskListsState = useFetch(() => getTaskLists(), []);
-  const [labelsRefreshKey, setLabelsRefreshKey] = useState(0);
-  const labelsState = useFetch(() => getLabels(), [labelsRefreshKey]);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const taskListsState = useFetch(() => getTaskLists(), [refreshKey]);
+  const labelsState = useFetch(() => getLabels(), [refreshKey]);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  useEffect(() => onLabelsChanged(() => setLabelsRefreshKey((key) => key + 1)), []);
+  useEffect(() => onLabelsChanged(() => setRefreshKey((key) => key + 1)), []);
+  useEffect(() => onSyncCompleted(() => setRefreshKey((key) => key + 1)), []);
+
+  function closeMobileNav() {
+    setMobileNavOpen(false);
+  }
 
   return (
-    <div className="grid h-dvh grid-cols-[240px_1fr] bg-background text-foreground">
-      <aside className="flex flex-col gap-6 overflow-y-auto border-r border-border p-4">
-        <div className="text-sm font-semibold tracking-tight">Tasks</div>
+    <div className="flex h-dvh flex-col bg-background text-foreground md:grid md:grid-cols-[240px_1fr]">
+      <header className="flex items-center justify-between border-b border-border p-4 md:hidden">
+        <span className="text-sm font-semibold tracking-tight">Tasks</span>
+        <button type="button" onClick={() => setMobileNavOpen(true)} aria-label="Open menu" className="text-muted-foreground">
+          <Menu className="size-5" />
+        </button>
+      </header>
+
+      {mobileNavOpen && (
+        <button
+          type="button"
+          aria-label="Close menu"
+          onClick={closeMobileNav}
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+        />
+      )}
+
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col gap-6 overflow-y-auto border-r border-border bg-background p-4 transition-transform duration-200 md:static md:z-auto md:w-auto md:translate-x-0",
+          mobileNavOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
+        <div className="hidden text-sm font-semibold tracking-tight md:block">Tasks</div>
 
         <nav className="flex flex-col gap-1">
           {BUILT_IN_VIEWS.map(({ to, label, icon: Icon }) => (
-            <NavLink key={to} to={to} className={({ isActive }) => navLinkClassName(isActive)}>
+            <NavLink key={to} to={to} onClick={closeMobileNav} className={({ isActive }) => navLinkClassName(isActive)}>
               <Icon className="size-4 shrink-0" />
               {label}
             </NavLink>
@@ -52,7 +81,12 @@ export function AppShell() {
             )}
             {taskListsState.status === "ready" &&
               taskListsState.data.taskLists.map((list) => (
-                <NavLink key={list.gtId} to={`/lists/${list.gtId}`} className={({ isActive }) => navLinkClassName(isActive)}>
+                <NavLink
+                  key={list.gtId}
+                  to={`/lists/${list.gtId}`}
+                  onClick={closeMobileNav}
+                  className={({ isActive }) => navLinkClassName(isActive)}
+                >
                   {list.title}
                 </NavLink>
               ))}
@@ -65,7 +99,7 @@ export function AppShell() {
         <div>
           <div className="flex items-center justify-between px-2">
             <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Labels</span>
-            <NavLink to="/labels" className="text-muted-foreground hover:text-foreground" aria-label="Manage labels">
+            <NavLink to="/labels" onClick={closeMobileNav} className="text-muted-foreground hover:text-foreground" aria-label="Manage labels">
               <Settings className="size-3.5" />
             </NavLink>
           </div>
@@ -79,21 +113,26 @@ export function AppShell() {
                 <NavLink
                   key={labelItem.id}
                   to={`/labels/${labelItem.id}`}
+                  onClick={closeMobileNav}
                   className={({ isActive }) => navLinkClassName(isActive)}
                 >
                   <LabelBadge label={labelItem} />
                 </NavLink>
               ))}
             {labelsState.status === "ready" && labelsState.data.labels.length === 0 && (
-              <NavLink to="/labels" className="px-2 text-sm text-muted-foreground hover:text-foreground">
+              <NavLink to="/labels" onClick={closeMobileNav} className="px-2 text-sm text-muted-foreground hover:text-foreground">
                 No labels yet. Create one.
               </NavLink>
             )}
           </nav>
         </div>
+
+        <div className="mt-auto">
+          <SyncStatus />
+        </div>
       </aside>
 
-      <main className="overflow-y-auto p-6">
+      <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <Outlet />
       </main>
     </div>

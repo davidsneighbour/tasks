@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router";
 import { completeTask, deleteTask, getTasks, reopenTask } from "@client/lib/api";
+import { onSyncCompleted } from "@client/lib/sync-events";
 import { useFetch } from "@client/lib/use-fetch";
 import { QuickCreate } from "./QuickCreate";
 import { TaskDetail } from "./TaskDetail";
@@ -51,6 +52,8 @@ export function TasksPage({ view, title }: TasksPageProps) {
     setRefreshKey((key) => key + 1);
   }
 
+  useEffect(() => onSyncCompleted(refresh), []);
+
   async function toggleComplete(gtId: string, isCompleted: boolean) {
     setTogglingGtId(gtId);
     setActionError(null);
@@ -82,7 +85,7 @@ export function TasksPage({ view, title }: TasksPageProps) {
   const pageTitle = list || label !== undefined ? "Tasks" : title;
 
   return (
-    <div className="flex h-full gap-6">
+    <div className="flex h-full flex-col gap-6 md:flex-row">
       <div className="min-w-0 flex-1">
         <h1 className="mb-4 text-lg font-semibold">{pageTitle}</h1>
 

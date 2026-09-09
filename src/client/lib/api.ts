@@ -26,6 +26,16 @@ export function getStatus(): Promise<StatusResponse> {
   return request<StatusResponse>("/api/status");
 }
 
+export type SyncResult =
+  | { status: "success"; listsAdded: number; listsUpdated: number; listsRemoved: number; tasksAdded: number; tasksUpdated: number; tasksRemoved: number }
+  | { status: "error"; message: string };
+
+// Runs the same reconciliation routine as startup (plan.md section 27) - no separate
+// manual-sync implementation on the server.
+export function syncNow(): Promise<SyncResult> {
+  return request("/api/sync", { method: "POST" });
+}
+
 export function getTaskLists(): Promise<{ taskLists: TaskListDTO[] }> {
   return request("/api/task-lists");
 }
