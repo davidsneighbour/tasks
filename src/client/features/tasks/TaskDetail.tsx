@@ -1,13 +1,17 @@
 import type { TaskDTO } from "@shared/types";
+import { Button } from "@client/components/ui/button";
 
 export interface TaskDetailProps {
   task: TaskDTO;
   onClose: () => void;
+  onDelete: () => void;
+  deleting: boolean;
 }
 
-// Read-only detail panel (plan.md section 37); field editing arrives with Phase 5's
-// remote-first update flow.
-export function TaskDetail({ task, onClose }: TaskDetailProps) {
+// Field editing (title/notes/due) is not wired yet - only status (via the row checkbox) and
+// delete are, since those are the mutations Phase 5 requires. Full inline editing can follow
+// the same remote-first pattern later without changing this panel's shape.
+export function TaskDetail({ task, onClose, onDelete, deleting }: TaskDetailProps) {
   return (
     <aside className="w-80 shrink-0 border-l border-border p-4">
       <div className="flex items-center justify-between">
@@ -40,6 +44,10 @@ export function TaskDetail({ task, onClose }: TaskDetailProps) {
           <dd>{task.status === "completed" ? "Completed" : "Open"}</dd>
         </div>
       </dl>
+
+      <Button variant="ghost" size="sm" className="mt-4 text-red-600 hover:bg-red-50 dark:text-red-400" onClick={onDelete} disabled={deleting}>
+        {deleting ? "Deleting…" : "Delete task"}
+      </Button>
     </aside>
   );
 }

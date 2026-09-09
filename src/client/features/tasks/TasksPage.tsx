@@ -1,7 +1,8 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router";
-import { getTasks } from "@client/lib/api";
+import { completeTask, deleteTask, getTasks, reopenTask } from "@client/lib/api";
 import { useFetch } from "@client/lib/use-fetch";
+import { QuickCreate } from "./QuickCreate";
 import { TaskDetail } from "./TaskDetail";
 import { TaskRow } from "./TaskRow";
 
@@ -16,8 +17,12 @@ export function TasksPage({ view, title }: TasksPageProps) {
   const { gtId: list } = useParams<{ gtId?: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedGtId = searchParams.get(SELECTED_TASK_PARAM);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [togglingGtId, setTogglingGtId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
-  const state = useFetch(() => getTasks(list ? { list } : view ? { view } : {}), [view, list]);
+  const state = useFetch(() => getTasks(list ? { list } : view ? { view } : {}), [view, list, refreshKey]);
 
   const selectedTask = useMemo(() => {
     if (state.status !== "ready" || !selectedGtId) return null;
@@ -36,10 +41,45 @@ export function TasksPage({ view, title }: TasksPageProps) {
     setSearchParams(next);
   }
 
+  function refresh() {
+    setRefreshKey((key) => key + 1);
+  }
+
+  async function toggleComplete(gtId: string, isCompleted: boolean) {
+    setTogglingGtId(gtId);
+    setActionError(null);
+    try {
+      await (isCompleted ? reopenTask(gtId) : completeTask(gtId));
+      refresh();
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setTogglingGtId(null);
+    }
+  }
+
+  async function handleDelete() {
+    if (!selectedGtId) return;
+    setDeleting(true);
+    setActionError(null);
+    try {
+      await deleteTask(selectedGtId);
+      closeDetail();
+      refresh();
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
     <div className="flex h-full gap-6">
       <div className="min-w-0 flex-1">
         <h1 className="mb-4 text-lg font-semibold">{list ? "Tasks" : title}</h1>
+
+        {list && <QuickCreate taskListGtId={list} onCreated={refresh} />}
+        {actionError && <p className="mb-2 text-sm text-red-600 dark:text-red-400">{actionError}</p>}
 
         {state.status === "loading" && <p className="text-sm text-muted-foreground">Loading…</p>}
         {state.status === "error" && <p className="text-sm text-red-600 dark:text-red-400">{state.message}</p>}
@@ -54,13 +94,17 @@ export function TasksPage({ view, title }: TasksPageProps) {
                 task={task}
                 selected={task.gtId === selectedGtId}
                 onSelect={() => selectTask(task.gtId)}
+                onToggleComplete={() => toggleComplete(task.gtId, task.status === "completed")}
+                toggling={togglingGtId === task.gtId}
               />
             ))}
           </div>
         )}
       </div>
 
-      {selectedTask && <TaskDetail task={selectedTask} onClose={closeDetail} />}
+      {selectedTask && (
+        <TaskDetail task={selectedTask} onClose={closeDetail} onDelete={handleDelete} deleting={deleting} />
+      )}
     </div>
   );
 }

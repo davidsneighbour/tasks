@@ -11,33 +11,32 @@ export interface TaskRowProps {
   task: TaskDTO;
   selected: boolean;
   onSelect: () => void;
+  onToggleComplete: () => void;
+  toggling: boolean;
 }
 
-// Read-only for Phase 4 (plan.md section 60): the checkbox reflects status but does not yet
-// mutate anything - that is Phase 5's remote-first create/update/complete flow.
-export function TaskRow({ task, selected, onSelect }: TaskRowProps) {
+// The checkbox and the row body are separate buttons: clicking the checkbox completes/reopens
+// the task (Phase 5, remote-first via the server), clicking the row opens the read-only
+// detail panel from Phase 4.
+export function TaskRow({ task, selected, onSelect, onToggleComplete, toggling }: TaskRowProps) {
   const due = formatDue(task.due);
   const isCompleted = task.status === "completed";
 
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      aria-pressed={selected}
-      className={cn(
-        "flex w-full items-start gap-3 rounded-md px-3 py-2 text-left text-sm",
-        selected ? "bg-muted" : "hover:bg-muted",
-      )}
-    >
-      {isCompleted ? (
-        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-      ) : (
-        <Circle className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-      )}
-      <span className="flex min-w-0 flex-col">
+    <div className={cn("flex items-start gap-3 rounded-md px-3 py-2 text-sm", selected ? "bg-muted" : "hover:bg-muted")}>
+      <button
+        type="button"
+        onClick={onToggleComplete}
+        disabled={toggling}
+        aria-label={isCompleted ? "Mark as not completed" : "Mark as completed"}
+        className="mt-0.5 shrink-0 text-muted-foreground hover:text-foreground disabled:opacity-50"
+      >
+        {isCompleted ? <CheckCircle2 className="size-4" /> : <Circle className="size-4" />}
+      </button>
+      <button type="button" onClick={onSelect} className="flex min-w-0 flex-1 flex-col text-left">
         <span className={cn("truncate", isCompleted && "text-muted-foreground line-through")}>{task.title}</span>
         {due && <span className="text-xs text-muted-foreground">{due}</span>}
-      </span>
-    </button>
+      </button>
+    </div>
   );
 }

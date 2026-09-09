@@ -60,9 +60,9 @@ export async function createTask(taskListId: string, input: CreateTaskInput): Pr
 }
 
 export interface UpdateTaskInput {
-  title?: string;
-  notes?: string;
-  due?: string | null;
+  title?: string | undefined;
+  notes?: string | undefined;
+  due?: string | null | undefined;
 }
 
 export async function updateTask(taskListId: string, taskId: string, input: UpdateTaskInput): Promise<GoogleTask> {
