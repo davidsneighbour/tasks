@@ -1,9 +1,12 @@
 import { fileURLToPath } from "node:url";
 import fastifyStatic from "@fastify/static";
 import Fastify from "fastify";
+import { taskListsRoutes } from "./api/task-lists.js";
 import { config, hasGoogleCredentials } from "./config/env.js";
 
 const app = Fastify({ logger: true });
+
+await app.register(taskListsRoutes);
 
 // Container health: must not depend on Google connectivity (plan.md section 59).
 app.get("/health", async () => ({ status: "ok" }));
