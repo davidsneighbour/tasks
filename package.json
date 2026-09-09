@@ -14,7 +14,7 @@
     "check": "npm run lint && npm run typecheck",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run",
+    "test": "NODE_OPTIONS=--experimental-sqlite vitest run",
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "NODE_OPTIONS=--experimental-sqlite tsx src/server/db/migrate.ts",
