@@ -36,10 +36,12 @@ export default defineConfig({
     },
   },
   server: {
-    host: "127.0.0.1",
+    // All interfaces (issue #16), so the dev server is reachable from other devices on the
+    // LAN, same as the production server.
+    host: "0.0.0.0",
     port: 5173,
     proxy: {
-      "/api": "http://127.0.0.1:3000",
+      "/api": "http://127.0.0.1:3070",
     },
   },
   build: {

@@ -17,4 +17,4 @@ npm run dev
 docker compose up --build
 ```
 
-Serves on `127.0.0.1:3000`. Persistent data lives in `./data/tasks.sqlite` on the host.
+Serves on port `3070`, reachable from any device on the LAN by default (set `HOST=127.0.0.1` in `.env` to restrict to localhost only — this app has no auth in front of it). Persistent data lives in `./data/tasks.sqlite` on the host.

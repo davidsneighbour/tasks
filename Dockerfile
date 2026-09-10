@@ -26,5 +26,5 @@ USER node
 
 ENV NODE_OPTIONS=--experimental-sqlite
 
-EXPOSE 3000
+EXPOSE 3070
 CMD ["sh", "-c", "node dist/server/db/migrate.js && node dist/server/server.js"]

@@ -18,10 +18,12 @@ const envSchema = z.object({
   GOOGLE_REFRESH_TOKEN: optionalNonEmpty,
   GOOGLE_REDIRECT_URI: optionalNonEmpty,
   DATABASE_URL: z.string().min(1).default("./data/tasks.sqlite"),
-  PORT: z.coerce.number().int().positive().default(3000),
-  // Only "0.0.0.0" inside the container, where compose's 127.0.0.1:3000:3000 port
-  // publish is what actually restricts host-level exposure (plan.md section 4).
-  HOST: z.string().min(1).default("127.0.0.1"),
+  PORT: z.coerce.number().int().positive().default(3070),
+  // Defaults to all interfaces (issue #16) so the app is reachable from other devices on the
+  // same LAN (e.g. a phone running the installed PWA). Set HOST=127.0.0.1 to restrict to
+  // localhost instead — this app has no auth in front of it, so treat LAN exposure as a
+  // deliberate choice on untrusted networks.
+  HOST: z.string().min(1).default("0.0.0.0"),
 });
 
 function loadEnv() {
