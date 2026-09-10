@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router";
 import { completeTask, deleteTask, getTasks, reopenTask } from "@client/lib/api";
 import { onSyncCompleted } from "@client/lib/sync-events";
+import { notifyTasksChanged } from "@client/lib/task-events";
 import { useFetch } from "@client/lib/use-fetch";
 import { getViewSettings, setViewSettings } from "@client/lib/view-settings";
 import { onViewSettingsChanged } from "@client/lib/view-settings-events";
@@ -64,6 +65,7 @@ export function TasksPage({ view, title }: TasksPageProps) {
 
   function refresh() {
     setRefreshKey((key) => key + 1);
+    notifyTasksChanged();
   }
 
   useEffect(() => onSyncCompleted(refresh), []);

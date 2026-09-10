@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { LabelBadge } from "@client/features/labels/LabelBadge";
 import { SyncStatus } from "@client/features/sync/SyncStatus";
-import { getLabels, getTaskLists } from "@client/lib/api";
+import { getLabels, getTaskCounts, getTaskLists } from "@client/lib/api";
 import { onLabelsChanged } from "@client/lib/label-events";
 import { onSyncCompleted } from "@client/lib/sync-events";
+import { onTasksChanged } from "@client/lib/task-events";
 import { applyTheme } from "@client/lib/theme";
 import { useFetch } from "@client/lib/use-fetch";
 import { cn } from "@client/lib/utils";
@@ -37,13 +38,18 @@ export function AppShell() {
   const labelsState = useFetch(() => getLabels(), [refreshKey]);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [theme, setTheme] = useState(() => getViewSettings().theme);
+  const [deadTasksThresholdDays, setDeadTasksThresholdDays] = useState(() => getViewSettings().deadTasksThresholdDays);
+  const countsState = useFetch(() => getTaskCounts({ deadTasksThresholdDays }), [refreshKey, deadTasksThresholdDays]);
 
   useEffect(() => onLabelsChanged(() => setRefreshKey((key) => key + 1)), []);
   useEffect(() => onSyncCompleted(() => setRefreshKey((key) => key + 1)), []);
+  useEffect(() => onTasksChanged(() => setRefreshKey((key) => key + 1)), []);
 
   useEffect(() => {
     const unsubscribe = onViewSettingsChanged(() => {
-      setTheme(getViewSettings().theme);
+      const settings = getViewSettings();
+      setTheme(settings.theme);
+      setDeadTasksThresholdDays(settings.deadTasksThresholdDays);
       applyTheme();
     });
     const media = window.matchMedia("(prefers-color-scheme: dark)");
@@ -64,6 +70,8 @@ export function AppShell() {
   }
 
   const ThemeIcon = THEME_ICONS[theme];
+  const viewCounts = countsState.status === "ready" ? countsState.data.views : {};
+  const listCounts = countsState.status === "ready" ? countsState.data.lists : {};
 
   return (
     <div className="flex h-dvh flex-col bg-background text-foreground md:grid md:grid-cols-[240px_1fr]">
@@ -95,7 +103,8 @@ export function AppShell() {
           {BUILT_IN_VIEWS.map(({ to, label, icon: Icon }) => (
             <NavLink key={to} to={to} onClick={closeMobileNav} className={({ isActive }) => navLinkClassName(isActive)}>
               <Icon className="size-4 shrink-0" />
-              {label}
+              <span className="truncate">{label}</span>
+              <span className="ml-auto text-xs text-muted-foreground">{viewCounts[to.slice(1)] ?? ""}</span>
             </NavLink>
           ))}
         </nav>
@@ -115,7 +124,8 @@ export function AppShell() {
                   onClick={closeMobileNav}
                   className={({ isActive }) => navLinkClassName(isActive)}
                 >
-                  {list.title}
+                  <span className="truncate">{list.title}</span>
+                  <span className="ml-auto text-xs text-muted-foreground">{listCounts[list.gtId] ?? ""}</span>
                 </NavLink>
               ))}
             {taskListsState.status === "ready" && taskListsState.data.taskLists.length === 0 && (

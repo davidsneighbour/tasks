@@ -35,6 +35,10 @@ interface TasksQuery {
   thresholdDays?: string;
 }
 
+interface TaskCountsQuery {
+  deadTasksThresholdDays?: string;
+}
+
 const createTaskSchema = z.object({
   taskListGtId: z.string().min(1),
   title: z.string().min(1),
@@ -71,6 +75,14 @@ function sendTaskServiceError(reply: FastifyReply, error: unknown): void {
   throw error;
 }
 
+const INVALID_THRESHOLD = Symbol("invalid-threshold");
+
+function parseThresholdDays(raw: string | undefined): number | undefined | typeof INVALID_THRESHOLD {
+  if (raw === undefined) return undefined;
+  const value = Number(raw);
+  return Number.isInteger(value) && value > 0 ? value : INVALID_THRESHOLD;
+}
+
 async function attachExtras(rows: TaskRow[]) {
   const gtIds = rows.map((row) => row.gtId);
   const [labelsByTask, starsByTask] = await Promise.all([getLabelsForTasks(gtIds), getStarsForTasks(gtIds)]);
@@ -85,13 +97,10 @@ export async function tasksRoutes(app: FastifyInstance) {
     const { view, list, label, star, thresholdDays } = request.query;
 
     if (view === "dead") {
-      let threshold: number | undefined;
-      if (thresholdDays !== undefined) {
-        threshold = Number(thresholdDays);
-        if (!Number.isInteger(threshold) || threshold <= 0) {
-          reply.code(400).send({ error: "validation", message: `Invalid thresholdDays "${thresholdDays}".` });
-          return;
-        }
+      const threshold = parseThresholdDays(thresholdDays);
+      if (threshold === INVALID_THRESHOLD) {
+        reply.code(400).send({ error: "validation", message: `Invalid thresholdDays "${thresholdDays}".` });
+        return;
       }
       const rows = await getDeadTasks(threshold);
       return { tasks: await attachExtras(rows) };
@@ -129,6 +138,32 @@ export async function tasksRoutes(app: FastifyInstance) {
 
     const rows = await loader();
     return { tasks: await attachExtras(rows) };
+  });
+
+  // Counts for the sidebar/nav badges (issue #15): one count per built-in view, using each
+  // view's own current definition (the "dead" view's count follows the caller's configured
+  // threshold, so a closed view's badge still matches what opening it would show), plus one
+  // count per task list covering all of its tasks (matching the `list` branch above).
+  app.get<{ Querystring: TaskCountsQuery }>("/api/tasks/counts", async (request, reply) => {
+    const deadTasksThreshold = parseThresholdDays(request.query.deadTasksThresholdDays);
+    if (deadTasksThreshold === INVALID_THRESHOLD) {
+      reply.code(400).send({ error: "validation", message: `Invalid deadTasksThresholdDays "${request.query.deadTasksThresholdDays}".` });
+      return;
+    }
+
+    const viewCountEntries = await Promise.all(
+      Object.entries({ ...VIEW_LOADERS, dead: () => getDeadTasks(deadTasksThreshold) }).map(
+        async ([view, loader]) => [view, (await loader()).length] as const,
+      ),
+    );
+
+    const allRows = await db.select({ gtTaskListId: tasks.gtTaskListId }).from(tasks);
+    const listCounts: Record<string, number> = {};
+    for (const row of allRows) {
+      listCounts[row.gtTaskListId] = (listCounts[row.gtTaskListId] ?? 0) + 1;
+    }
+
+    return { views: Object.fromEntries(viewCountEntries), lists: listCounts };
   });
 
   app.post("/api/tasks", async (request, reply) => {

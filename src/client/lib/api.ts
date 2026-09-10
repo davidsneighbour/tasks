@@ -40,6 +40,15 @@ export function getTaskLists(): Promise<{ taskLists: TaskListDTO[] }> {
   return request("/api/task-lists");
 }
 
+export function getTaskCounts(
+  params: { deadTasksThresholdDays?: number } = {},
+): Promise<{ views: Record<string, number>; lists: Record<string, number> }> {
+  const search = new URLSearchParams();
+  if (params.deadTasksThresholdDays !== undefined) search.set("deadTasksThresholdDays", String(params.deadTasksThresholdDays));
+  const query = search.toString();
+  return request(`/api/tasks/counts${query ? `?${query}` : ""}`);
+}
+
 export function getTasks(
   params: { view?: string; list?: string; label?: number; star?: StarType; thresholdDays?: number } = {},
 ): Promise<{ tasks: TaskDTO[] }> {
