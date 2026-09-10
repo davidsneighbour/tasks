@@ -1,11 +1,13 @@
+import { Pin } from "lucide-react";
 import type { DragEvent } from "react";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router";
 import type { TaskListDTO } from "@shared/types";
-import { getTaskLists, setTaskListOrder } from "@client/lib/api";
+import { getTaskLists, setDefaultTaskList, setTaskListOrder } from "@client/lib/api";
 import { onSyncCompleted } from "@client/lib/sync-events";
 import { onTasksChanged } from "@client/lib/task-events";
 import { useFetch } from "@client/lib/use-fetch";
+import { cn } from "@client/lib/utils";
 
 export interface TaskListNavProps {
   listCounts: Record<string, number>;
@@ -20,16 +22,20 @@ export function TaskListNav({ listCounts, navLinkClassName, onNavigate }: TaskLi
   const [refreshKey, setRefreshKey] = useState(0);
   const state = useFetch(() => getTaskLists(), [refreshKey]);
   const [orderedLists, setOrderedLists] = useState<TaskListDTO[]>([]);
+  const [defaultGtId, setDefaultGtId] = useState<string | null>(null);
   const [draggedGtId, setDraggedGtId] = useState<string | null>(null);
 
   useEffect(() => onSyncCompleted(() => setRefreshKey((key) => key + 1)), []);
   useEffect(() => onTasksChanged(() => setRefreshKey((key) => key + 1)), []);
 
   useEffect(() => {
-    if (state.status === "ready") setOrderedLists(state.data.taskLists);
+    if (state.status === "ready") {
+      setOrderedLists(state.data.taskLists);
+      setDefaultGtId(state.data.defaultTaskListGtId);
+    }
   }, [state]);
 
-  function handleDragOver(event: DragEvent<HTMLAnchorElement>, overGtId: string) {
+  function handleDragOver(event: DragEvent<HTMLDivElement>, overGtId: string) {
     event.preventDefault();
     if (!draggedGtId || draggedGtId === overGtId) return;
 
@@ -46,11 +52,19 @@ export function TaskListNav({ listCounts, navLinkClassName, onNavigate }: TaskLi
     });
   }
 
-  function handleDrop(event: DragEvent<HTMLAnchorElement>) {
+  function handleDrop(event: DragEvent<HTMLDivElement>) {
     event.preventDefault();
     if (!draggedGtId) return;
     setDraggedGtId(null);
     void setTaskListOrder(orderedLists.map((list) => list.gtId));
+  }
+
+  // Toggling the current default off falls back to whatever's first in sidebar order
+  // (issue #20), rather than leaving no list at all as the effective default.
+  function toggleDefault(gtId: string) {
+    const next = defaultGtId === gtId ? null : gtId;
+    setDefaultGtId(next);
+    void setDefaultTaskList(next);
   }
 
   if (state.status === "loading") return <p className="px-2 text-sm text-muted-foreground">Loading…</p>;
@@ -59,22 +73,34 @@ export function TaskListNav({ listCounts, navLinkClassName, onNavigate }: TaskLi
 
   return (
     <>
-      {orderedLists.map((list) => (
-        <NavLink
-          key={list.gtId}
-          to={`/lists/${list.gtId}`}
-          onClick={onNavigate}
-          className={({ isActive }) => navLinkClassName(isActive)}
-          draggable
-          onDragStart={() => setDraggedGtId(list.gtId)}
-          onDragOver={(event) => handleDragOver(event, list.gtId)}
-          onDrop={handleDrop}
-          onDragEnd={() => setDraggedGtId(null)}
-        >
-          <span className="truncate">{list.title}</span>
-          <span className="ml-auto text-xs text-muted-foreground">{listCounts[list.gtId] ?? ""}</span>
-        </NavLink>
-      ))}
+      {orderedLists.map((list) => {
+        const isDefault = list.gtId === defaultGtId;
+        return (
+          <div
+            key={list.gtId}
+            className="flex items-center gap-0.5"
+            draggable
+            onDragStart={() => setDraggedGtId(list.gtId)}
+            onDragOver={(event) => handleDragOver(event, list.gtId)}
+            onDrop={handleDrop}
+            onDragEnd={() => setDraggedGtId(null)}
+          >
+            <NavLink to={`/lists/${list.gtId}`} onClick={onNavigate} className={({ isActive }) => cn(navLinkClassName(isActive), "flex-1")}>
+              <span className="truncate">{list.title}</span>
+              <span className="ml-auto text-xs text-muted-foreground">{listCounts[list.gtId] ?? ""}</span>
+            </NavLink>
+            <button
+              type="button"
+              onClick={() => toggleDefault(list.gtId)}
+              aria-label={isDefault ? `Unset ${list.title} as the default list` : `Set ${list.title} as the default list`}
+              title={isDefault ? "Default list" : "Set as default list"}
+              className={cn("shrink-0 rounded-md p-1.5", isDefault ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+            >
+              <Pin className={cn("size-3.5", isDefault && "fill-current")} />
+            </button>
+          </div>
+        );
+      })}
     </>
   );
 }

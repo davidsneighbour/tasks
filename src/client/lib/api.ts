@@ -36,12 +36,16 @@ export function syncNow(): Promise<SyncResult> {
   return request("/api/sync", { method: "POST" });
 }
 
-export function getTaskLists(): Promise<{ taskLists: TaskListDTO[] }> {
+export function getTaskLists(): Promise<{ taskLists: TaskListDTO[]; defaultTaskListGtId: string | null }> {
   return request("/api/task-lists");
 }
 
 export function setTaskListOrder(gtIds: string[]): Promise<{ ok: true }> {
   return request("/api/task-lists/order", { method: "PUT", body: JSON.stringify({ gtIds }) });
+}
+
+export function setDefaultTaskList(gtId: string | null): Promise<{ ok: true }> {
+  return request("/api/task-lists/default", { method: "PUT", body: JSON.stringify({ gtId }) });
 }
 
 export function getTaskCounts(

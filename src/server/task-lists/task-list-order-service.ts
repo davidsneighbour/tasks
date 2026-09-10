@@ -1,6 +1,7 @@
 import { eq, inArray } from "drizzle-orm";
+import type { TaskListDTO } from "../../shared/types.js";
 import { db } from "../db/client.js";
-import { taskListOrder } from "../db/schema.js";
+import { taskListOrder, taskLists } from "../db/schema.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -33,4 +34,16 @@ export async function setTaskListOrder(gtIds: string[]): Promise<void> {
 export async function getTaskListPositions(): Promise<Map<string, number>> {
   const rows = await db.select().from(taskListOrder);
   return new Map(rows.map((row) => [row.taskListGtId, row.position]));
+}
+
+// The sidebar's effective order (issue #18): lists with a stored position sort by it first,
+// then any list synced from GT without one yet falls back to alphabetical, appended after.
+// Shared with default-task-list-service.ts, which uses "the first list here" as its fallback.
+export async function getOrderedTaskLists(): Promise<TaskListDTO[]> {
+  const [rows, positions] = await Promise.all([db.select().from(taskLists), getTaskListPositions()]);
+
+  const ordered = rows.filter((row) => positions.has(row.gtId)).sort((a, b) => positions.get(a.gtId)! - positions.get(b.gtId)!);
+  const unordered = rows.filter((row) => !positions.has(row.gtId)).sort((a, b) => a.title.localeCompare(b.title));
+
+  return [...ordered, ...unordered].map((row) => ({ gtId: row.gtId, title: row.title }));
 }

@@ -81,6 +81,16 @@ export const taskListOrder = sqliteTable("task_list_order", {
   updatedAt: text("updated_at").notNull(),
 });
 
+// Singleton row (id = 1) holding the user's configured default task list (issue #20), used
+// by quick-capture flows (e.g. the CLI in #17) when no list is given. A missing row, a null
+// value, or a value referencing a list that no longer exists all mean "no configured default";
+// callers fall back to the first list in task_list_order (or alphabetical).
+export const defaultTaskList = sqliteTable("default_task_list", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  taskListGtId: text("task_list_gt_id").references(() => taskLists.gtId, { onDelete: "set null" }),
+  updatedAt: text("updated_at").notNull(),
+});
+
 // Singleton row (id = 1) tracking the last full reconciliation (plan.md section 46).
 export const syncState = sqliteTable("sync_state", {
   id: integer("id").primaryKey({ autoIncrement: true }),
