@@ -90,7 +90,7 @@ export function SyncStatus() {
       </button>
 
       <p
-        className={cn("break-words px-2", isError ? "text-red-600 dark:text-red-400" : "text-muted-foreground")}
+        className={cn("wrap-break-word px-2", isError ? "text-red-600 dark:text-red-400" : "text-muted-foreground")}
         title={isError ? (status.sync.lastError ?? undefined) : undefined}
       >
         {!canSync && "Not connected to Google Tasks"}

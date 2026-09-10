@@ -38,7 +38,7 @@ export function QuickCreate({ taskListGtId, onCreated }: QuickCreateProps) {
         onChange={(event) => setTitle(event.target.value)}
         placeholder="Add a task and press Enter…"
         disabled={submitting}
-        className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50"
+        className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-hidden focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50"
       />
       {error && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{error}</p>}
     </form>
