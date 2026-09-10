@@ -40,6 +40,10 @@ export function getTaskLists(): Promise<{ taskLists: TaskListDTO[] }> {
   return request("/api/task-lists");
 }
 
+export function setTaskListOrder(gtIds: string[]): Promise<{ ok: true }> {
+  return request("/api/task-lists/order", { method: "PUT", body: JSON.stringify({ gtIds }) });
+}
+
 export function getTaskCounts(
   params: { deadTasksThresholdDays?: number } = {},
 ): Promise<{ views: Record<string, number>; lists: Record<string, number> }> {

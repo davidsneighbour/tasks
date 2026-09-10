@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { LabelBadge } from "@client/features/labels/LabelBadge";
 import { SyncStatus } from "@client/features/sync/SyncStatus";
-import { getLabels, getTaskCounts, getTaskLists } from "@client/lib/api";
+import { TaskListNav } from "@client/features/tasks/TaskListNav";
+import { getLabels, getTaskCounts } from "@client/lib/api";
 import { onLabelsChanged } from "@client/lib/label-events";
 import { onSyncCompleted } from "@client/lib/sync-events";
 import { onTasksChanged } from "@client/lib/task-events";
@@ -34,7 +35,6 @@ function navLinkClassName(isActive: boolean): string {
 
 export function AppShell() {
   const [refreshKey, setRefreshKey] = useState(0);
-  const taskListsState = useFetch(() => getTaskLists(), [refreshKey]);
   const labelsState = useFetch(() => getLabels(), [refreshKey]);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [theme, setTheme] = useState(() => getViewSettings().theme);
@@ -112,25 +112,7 @@ export function AppShell() {
         <div>
           <div className="px-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Lists</div>
           <nav className="mt-1 flex flex-col gap-1">
-            {taskListsState.status === "loading" && <p className="px-2 text-sm text-muted-foreground">Loading…</p>}
-            {taskListsState.status === "error" && (
-              <p className="px-2 text-sm text-red-600 dark:text-red-400">{taskListsState.message}</p>
-            )}
-            {taskListsState.status === "ready" &&
-              taskListsState.data.taskLists.map((list) => (
-                <NavLink
-                  key={list.gtId}
-                  to={`/lists/${list.gtId}`}
-                  onClick={closeMobileNav}
-                  className={({ isActive }) => navLinkClassName(isActive)}
-                >
-                  <span className="truncate">{list.title}</span>
-                  <span className="ml-auto text-xs text-muted-foreground">{listCounts[list.gtId] ?? ""}</span>
-                </NavLink>
-              ))}
-            {taskListsState.status === "ready" && taskListsState.data.taskLists.length === 0 && (
-              <p className="px-2 text-sm text-muted-foreground">No lists yet. Run a sync.</p>
-            )}
+            <TaskListNav listCounts={listCounts} navLinkClassName={navLinkClassName} onNavigate={closeMobileNav} />
           </nav>
         </div>
 

@@ -69,6 +69,18 @@ export const taskStars = sqliteTable("task_stars", {
   updatedAt: text("updated_at").notNull(),
 });
 
+// One optional custom sort position per task list (issue #18) - a single row keyed directly
+// by the GT list id, matching task_stars. No row means "no custom position yet", so the API
+// falls back to alphabetical order for that list. GT has no ordering field for task lists
+// (unlike tasks' GT-owned `position`), so this is entirely T-owned.
+export const taskListOrder = sqliteTable("task_list_order", {
+  taskListGtId: text("task_list_gt_id")
+    .primaryKey()
+    .references(() => taskLists.gtId, { onDelete: "cascade" }),
+  position: integer("position").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
 // Singleton row (id = 1) tracking the last full reconciliation (plan.md section 46).
 export const syncState = sqliteTable("sync_state", {
   id: integer("id").primaryKey({ autoIncrement: true }),
