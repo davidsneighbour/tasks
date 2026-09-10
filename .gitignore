@@ -20,3 +20,7 @@ npm-debug.log*
 coverage/
 playwright-report/
 test-results/
+
+# Local project-management working files
+/PROJECT.md
+/TODO.md
