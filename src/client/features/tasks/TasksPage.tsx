@@ -122,7 +122,7 @@ export function TasksPage({ view, title }: TasksPageProps) {
           </label>
         )}
 
-        {list && <QuickCreate taskListGtId={list} onCreated={refresh} />}
+        <QuickCreate {...(list ? { taskListGtId: list } : {})} onCreated={refresh} />
         {actionError && <p className="mb-2 text-sm text-red-600 dark:text-red-400">{actionError}</p>}
 
         {state.status === "loading" && <p className="text-sm text-muted-foreground">Loading…</p>}
