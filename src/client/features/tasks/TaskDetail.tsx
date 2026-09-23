@@ -1,6 +1,7 @@
 import type { TaskDTO } from "@shared/types";
 import { Button } from "@client/components/ui/button";
 import { DueDatePicker } from "@client/features/tasks/DueDatePicker";
+import { EditableTextField } from "@client/features/tasks/EditableTextField";
 import { LabelPicker } from "@client/features/labels/LabelPicker";
 import { StarPicker } from "@client/features/stars/StarPicker";
 
@@ -12,9 +13,8 @@ export interface TaskDetailProps {
   deleting: boolean;
 }
 
-// Title/notes editing is not wired yet - status (via the row checkbox), due date, labels,
-// star, and delete are. The rest can follow the same remote-first pattern later without
-// changing this panel's shape.
+// Status (via the row checkbox), title, notes, due date, labels, and star are all editable
+// here, each following the same remote-first pattern (plan.md sections 23-26).
 export function TaskDetail({ task, onClose, onDelete, onChanged, deleting }: TaskDetailProps) {
   return (
     <aside className="shrink-0 border-t border-border p-4 md:h-full md:min-h-0 md:w-80 md:overflow-y-auto md:border-l md:border-t-0">
@@ -28,15 +28,17 @@ export function TaskDetail({ task, onClose, onDelete, onChanged, deleting }: Tas
       <dl className="mt-4 flex flex-col gap-3 text-sm">
         <div>
           <dt className="text-xs font-medium uppercase text-muted-foreground">Title</dt>
-          <dd>{task.title}</dd>
+          <dd>
+            <EditableTextField taskGtId={task.gtId} field="title" value={task.title} placeholder="Untitled task" onChange={onChanged} />
+          </dd>
         </div>
 
-        {task.notes && (
-          <div>
-            <dt className="text-xs font-medium uppercase text-muted-foreground">Notes</dt>
-            <dd className="whitespace-pre-wrap">{task.notes}</dd>
-          </div>
-        )}
+        <div>
+          <dt className="text-xs font-medium uppercase text-muted-foreground">Notes</dt>
+          <dd>
+            <EditableTextField taskGtId={task.gtId} field="notes" value={task.notes ?? ""} placeholder="No notes" onChange={onChanged} />
+          </dd>
+        </div>
 
         <div>
           <dt className="text-xs font-medium uppercase text-muted-foreground">Due</dt>
