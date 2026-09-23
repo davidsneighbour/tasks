@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Canonical, tool-agnostic source of instructions for AI agents working in this repository. Agent-specific files (for example `CLAUDE.md`) are thin adapters that point back here; they must not duplicate this content.
+Canonical, tool-agnostic source of instructions for AI agents working in this repository. Current Claude Code and Codex releases read this file natively; no per-agent adapter file is required.
 
 ## Project overview
 
@@ -15,11 +15,9 @@ Core points:
 * Recommended stack: TypeScript, Node.js, React, Vite, React Router, `vite-plugin-pwa`, with a small Node server alongside the frontend and SQLite for storage.
 * Explicitly out of scope: hosted SaaS, multi-user support, collaboration features, an alternative task backend, or offline-first conflict resolution.
 
-The full design — data model, synchronisation model, sync locking, API structure, backend module layout — is written up in [scratch/plan.md](scratch/plan.md). Read it before implementing anything in this repository; it is the authoritative design reference until that content is promoted into proper project documentation (e.g. a `docs/` tree or `README.md`).
-
 ## Current repository state
 
-The project is scaffolded: TypeScript, React, Vite, Fastify (server), Drizzle (SQLite), ESLint, and Vitest/Playwright are in place, following the stack described in `scratch/plan.md`. There is no CI configured yet.
+The project is scaffolded: TypeScript, React, Vite, Fastify (server), Drizzle (SQLite), ESLint, and Vitest/Playwright are in place. There is no CI configured yet.
 
 Key npm scripts (see `package.json` for the full list):
 
@@ -36,7 +34,3 @@ Conventions:
 * Commit messages follow Conventional Commits (see `git log`).
 
 There are no established commit-message scope conventions beyond Conventional Commits, and no CI pipeline yet. When either is added, update this section and `.agents/instructions/` accordingly rather than leaving agents to guess.
-
-## Agent-specific files
-
-* `CLAUDE.md` — Claude Code adapter; imports this file and adds only genuinely Claude-specific instructions.
