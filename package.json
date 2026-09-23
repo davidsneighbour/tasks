@@ -1,5 +1,5 @@
 {
-  "name": "tasks",
+  "name": "@davidsneighbour/tasks",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -8,6 +8,7 @@
     "dev": "concurrently -n server,client -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
     "dev:client": "vite",
     "dev:server": "NODE_OPTIONS=--experimental-sqlite tsx watch src/server/server.ts",
+    "stop": "fuser -k 3070/tcp 5173/tcp 2>/dev/null; true",
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build",
     "build:server": "tsc -p tsconfig.server.json",
