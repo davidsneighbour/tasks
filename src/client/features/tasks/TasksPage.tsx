@@ -101,8 +101,8 @@ export function TasksPage({ view, title }: TasksPageProps) {
   const pageTitle = list || label !== undefined ? "Tasks" : title;
 
   return (
-    <div className="flex h-full flex-col gap-6 md:flex-row">
-      <div className="min-w-0 flex-1">
+    <div className="flex h-full flex-col gap-6 md:flex-row md:overflow-hidden">
+      <div className="min-w-0 flex-1 md:min-h-0 md:overflow-y-auto md:pr-1">
         <h1 className="mb-4 text-lg font-semibold">{pageTitle}</h1>
 
         {isDeadView && (
