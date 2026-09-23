@@ -81,6 +81,16 @@ export function createTask(input: CreateTaskInput): Promise<{ task: TaskDTO }> {
   return request("/api/tasks", { method: "POST", body: JSON.stringify(input) });
 }
 
+export interface UpdateTaskInput {
+  title?: string;
+  notes?: string;
+  due?: string | null;
+}
+
+export function updateTask(gtId: string, input: UpdateTaskInput): Promise<{ task: TaskDTO }> {
+  return request(`/api/tasks/${encodeURIComponent(gtId)}`, { method: "PATCH", body: JSON.stringify(input) });
+}
+
 export function completeTask(gtId: string): Promise<{ task: TaskDTO }> {
   return request(`/api/tasks/${encodeURIComponent(gtId)}/complete`, { method: "POST" });
 }

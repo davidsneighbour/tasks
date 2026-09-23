@@ -1,5 +1,6 @@
 import type { TaskDTO } from "@shared/types";
 import { Button } from "@client/components/ui/button";
+import { DueDatePicker } from "@client/features/tasks/DueDatePicker";
 import { LabelPicker } from "@client/features/labels/LabelPicker";
 import { StarPicker } from "@client/features/stars/StarPicker";
 
@@ -11,9 +12,9 @@ export interface TaskDetailProps {
   deleting: boolean;
 }
 
-// Field editing (title/notes/due) is not wired yet - only status (via the row checkbox),
-// labels, star, and delete are. Full inline editing can follow the same remote-first pattern
-// later without changing this panel's shape.
+// Title/notes editing is not wired yet - status (via the row checkbox), due date, labels,
+// star, and delete are. The rest can follow the same remote-first pattern later without
+// changing this panel's shape.
 export function TaskDetail({ task, onClose, onDelete, onChanged, deleting }: TaskDetailProps) {
   return (
     <aside className="shrink-0 border-t border-border p-4 md:h-full md:min-h-0 md:w-80 md:overflow-y-auto md:border-l md:border-t-0">
@@ -39,7 +40,9 @@ export function TaskDetail({ task, onClose, onDelete, onChanged, deleting }: Tas
 
         <div>
           <dt className="text-xs font-medium uppercase text-muted-foreground">Due</dt>
-          <dd>{task.due ? new Date(task.due).toLocaleDateString() : "No due date"}</dd>
+          <dd>
+            <DueDatePicker taskGtId={task.gtId} currentDue={task.due} onChange={onChanged} />
+          </dd>
         </div>
 
         <div>
