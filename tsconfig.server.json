@@ -1,11 +1,11 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "@dnbhq/tsconfig/cli",
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
     "noEmit": false,
+    "allowImportingTsExtensions": false,
     "outDir": "dist",
     "rootDir": "src",
+    "baseUrl": ".",
     "paths": {
       "@server/*": ["src/server/*"],
       "@shared/*": ["src/shared/*"]

@@ -1,21 +1,13 @@
 {
+  "extends": "@dnbhq/tsconfig/strict",
   "compilerOptions": {
-    "target": "ES2022",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "moduleDetection": "force",
     "jsx": "react-jsx",
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitOverride": true,
-    "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "isolatedModules": true,
-    "skipLibCheck": true,
     "resolveJsonModule": true,
-    "noEmit": true,
     "baseUrl": ".",
     "paths": {
       "@client/*": ["src/client/*"],

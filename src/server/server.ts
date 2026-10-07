@@ -22,7 +22,7 @@ await app.register(syncRoutes);
 // Container health: must not depend on Google connectivity (plan.md section 59).
 app.get("/health", async () => ({ status: "ok" }));
 
-if (process.env.NODE_ENV === "production") {
+if (process.env["NODE_ENV"] === "production") {
   await app.register(fastifyStatic, {
     root: fileURLToPath(new URL("../client", import.meta.url)),
   });
