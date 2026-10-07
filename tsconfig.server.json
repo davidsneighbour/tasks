@@ -5,11 +5,10 @@
     "allowImportingTsExtensions": false,
     "outDir": "dist",
     "rootDir": "src",
-    "baseUrl": ".",
     "paths": {
-      "@server/*": ["src/server/*"],
-      "@shared/*": ["src/shared/*"]
+      "@server/*": ["./src/server/*"],
+      "@shared/*": ["./src/shared/*"]
     }
   },
-  "include": ["src/server", "src/shared"]
+  "include": ["./src/server", "src/shared"]
 }
