@@ -1,9 +1,7 @@
-import { config as loadDotenv } from "dotenv";
 import { z } from "zod";
 
-// Loads .env for local dev/CLI use; a no-op (with a suppressed "file not found" warning) in
-// Docker, where compose's env_file already populates process.env directly.
-loadDotenv({ quiet: true });
+// Configuration is read from process.env only. The environment (shell, compose's env_file,
+// etc.) is responsible for populating it; nothing here loads a .env file.
 
 // .env.example ships these as blank until `npm run auth:setup` fills them in, so
 // treat an empty string the same as "unset" rather than failing validation.
