@@ -7,12 +7,12 @@
     "predev": "npm run db:migrate",
     "dev": "concurrently -n server,client -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
     "dev:client": "vite",
-    "dev:server": "NODE_OPTIONS=--experimental-sqlite tsx watch src/server/server.ts",
+    "dev:server": "NODE_OPTIONS=--experimental-sqlite tsx watch --env-file-if-exists=.env src/server/server.ts",
     "stop": "fuser -k 3070/tcp 5173/tcp 2>/dev/null; true",
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build",
     "build:server": "tsc -p tsconfig.server.json",
-    "start": "NODE_OPTIONS=--experimental-sqlite node dist/server/server.js",
+    "start": "NODE_OPTIONS=--experimental-sqlite node --env-file-if-exists=.env dist/server/server.js",
     "check": "npm run lint && npm run typecheck",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
@@ -23,9 +23,9 @@
     "test": "NODE_OPTIONS=--experimental-sqlite vitest run",
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "NODE_OPTIONS=--experimental-sqlite tsx src/server/db/migrate.ts",
-    "auth:setup": "NODE_OPTIONS=--experimental-sqlite tsx src/server/google/auth-setup.ts",
-    "task:add": "NODE_OPTIONS=--experimental-sqlite tsx src/server/tasks/cli-add.ts"
+    "db:migrate": "NODE_OPTIONS=--experimental-sqlite tsx --env-file-if-exists=.env src/server/db/migrate.ts",
+    "auth:setup": "NODE_OPTIONS=--experimental-sqlite tsx --env-file-if-exists=.env src/server/google/auth-setup.ts",
+    "task:add": "NODE_OPTIONS=--experimental-sqlite tsx --env-file-if-exists=.env src/server/tasks/cli-add.ts"
   },
   "dependencies": {
     "@fastify/static": "^10.1.5",
@@ -72,7 +72,7 @@
     "vitest": "^5.0.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=26"
   },
   "allowScripts": {
     "better-sqlite3@11.10.0": true,

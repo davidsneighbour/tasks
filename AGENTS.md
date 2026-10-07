@@ -30,7 +30,7 @@ Conventions:
 
 * Strict TypeScript (`strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` all on) — keep new code compatible with these settings.
 * ESM throughout (`"type": "module"`).
-* Node `>=20` (see `engines` in `package.json`).
+* Node `>=26` (see `engines` in `package.json`).
 * Commit messages follow Conventional Commits (see `git log`).
 
 There are no established commit-message scope conventions beyond Conventional Commits, and no CI pipeline yet. When either is added, update this section and `.agents/instructions/` accordingly rather than leaving agents to guess.

@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 // Configuration is read from process.env only. The environment (shell, compose's env_file,
-// etc.) is responsible for populating it; nothing here loads a .env file.
+// etc.) is responsible for populating it; nothing here loads a .env file. The npm scripts pass
+// Node's --env-file-if-exists=.env, which never overrides variables already set in the shell.
 
 // .env.example ships these as blank until `npm run auth:setup` fills them in, so
 // treat an empty string the same as "unset" rather than failing validation.
