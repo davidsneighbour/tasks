@@ -48,7 +48,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
     "@dnbhq/biome-config": "0.3.1",
-    "@dnbhq/markdownlint-config": "0.2.11",
+    "@dnbhq/markdownlint-config": "2.0.0",
     "@dnbhq/secretlint-config": "0.1.1",
     "@dnbhq/tsconfig": "0.1.6",
     "@eslint/js": "^9.15.0",
@@ -81,5 +81,18 @@
     "esbuild@0.28.2": true,
     "esbuild@0.21.5": true,
     "esbuild@0.25.12": true
+  },
+  "overrides": {
+    "shell-quote": "1.12.0",
+    "smol-toml": "1.9.0",
+    "katex": "0.18.2",
+    "@esbuild-kit/core-utils": {
+      "esbuild": "0.25.12"
+    },
+    "markdownlint-rule-title-case-style": {
+      "markdownlint": {
+        "markdown-it": "14.3.1"
+      }
+    }
   }
 }
