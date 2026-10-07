@@ -13,7 +13,7 @@ export interface EditableTextFieldProps {
   onChange: () => void;
 }
 
-// Title and notes both go through the same remote-first PATCH (plan.md section 23); only the
+// Title and notes both go through the same remote-first PATCH; only the
 // field name and whether an empty value is allowed differ.
 export function EditableTextField({ taskGtId, field, value, placeholder, onChange }: EditableTextFieldProps) {
   const [editing, setEditing] = useState(false);

@@ -29,7 +29,7 @@ function sendTaskListError(reply: FastifyReply, error: unknown): void {
 }
 
 // Reads the SQLite mirror (kept current by sync/), not a live Google call: the frontend
-// should not need to know anything about GT request construction (plan.md section 30, 39).
+// should not need to know anything about GT request construction.
 export async function taskListsRoutes(app: FastifyInstance) {
   app.get("/api/task-lists", async () => {
     const [result, defaultTaskListGtId] = await Promise.all([getOrderedTaskLists(), getConfiguredDefaultTaskListGtId()]);

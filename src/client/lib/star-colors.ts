@@ -1,6 +1,6 @@
 import type { StarType } from "@shared/stars";
 
-// Icon fill/text colour per star type (plan.md section 10).
+// Icon fill/text colour per star type.
 export const STAR_COLOUR_CLASSES: Record<StarType, string> = {
   "yellow-star": "text-yellow-500 fill-yellow-500",
   "red-star": "text-red-500 fill-red-500",

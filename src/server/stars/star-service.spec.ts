@@ -48,7 +48,7 @@ describe("setTaskStar / removeTaskStar / getStarsForTasks", () => {
     expect(map.get("task-1")).toBe("yellow-star");
   });
 
-  it("replaces rather than allowing more than one star at a time (plan.md section 10)", async () => {
+  it("replaces rather than allowing more than one star at a time", async () => {
     await setTaskStar("task-1", "yellow-star");
     await setTaskStar("task-1", "red-star");
 
@@ -65,7 +65,7 @@ describe("setTaskStar / removeTaskStar / getStarsForTasks", () => {
     expect(map.has("task-1")).toBe(false);
   });
 
-  it("cascade-deletes the star when the task's GT cache row is deleted (plan.md section 2.2)", async () => {
+  it("cascade-deletes the star when the task's GT cache row is deleted", async () => {
     await setTaskStar("task-1", "yellow-star");
     await db.delete(tasks).where(eq(tasks.gtId, "task-1"));
 

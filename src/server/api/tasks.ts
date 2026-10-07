@@ -54,7 +54,7 @@ const updateTaskSchema = z.object({
 });
 
 // Every GT operation must distinguish auth/network/rate-limit/not-found/validation/unexpected
-// failures (plan.md section 29); this maps each of the ways a mutation can fail to a status.
+// failures; this maps each of the ways a mutation can fail to a status.
 function sendTaskServiceError(reply: FastifyReply, error: unknown): void {
   if (error instanceof z.ZodError) {
     reply.code(400).send({ error: "validation", message: error.issues.map((issue) => issue.message).join("; ") });
@@ -89,9 +89,9 @@ async function attachExtras(rows: TaskRow[]) {
   return rows.map((row) => toTaskDTO(row, labelsByTask.get(row.gtId), starsByTask.get(row.gtId) ?? null));
 }
 
-// Reads go straight to the SQLite cache, never to Google directly (plan.md's whole point of
-// a local mirror "for fast rendering and filtering"). Mutations are remote-first, delegated
-// to tasks/task-service.ts (plan.md sections 22-25, 63).
+// Reads go straight to the SQLite cache, never to Google directly: the local mirror
+// exists for fast rendering and filtering. Mutations are remote-first, delegated
+// to tasks/task-service.ts.
 export async function tasksRoutes(app: FastifyInstance) {
   app.get<{ Querystring: TasksQuery }>("/api/tasks", async (request, reply) => {
     const { view, list, label, star, thresholdDays } = request.query;

@@ -1,6 +1,6 @@
 import { getAuthorizedClient } from "./auth.js";
 
-// Every GT operation must distinguish between these failure kinds (plan.md section 29) so the
+// Every GT operation must distinguish between these failure kinds so the
 // UI can show a clear, honest failure state instead of a silent or generic error.
 export type GoogleApiErrorKind = "authentication" | "network" | "rate-limit" | "not-found" | "validation" | "unexpected";
 
@@ -37,8 +37,7 @@ export function httpStatusForGoogleApiError(error: GoogleApiError): number {
 const TASKS_API_BASE = "https://tasks.googleapis.com/tasks/v1";
 
 // Only this module (and its siblings in google/) talks to Google directly, so API route
-// handlers never need to know how OAuth, pagination, or request construction works
-// (plan.md sections 30, 47).
+// handlers never need to know how OAuth, pagination, or request construction works.
 export async function googleTasksRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const auth = getAuthorizedClient();
 

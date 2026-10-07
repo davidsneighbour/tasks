@@ -1,4 +1,4 @@
-// GT due dates are dates, not times (plan.md section 13): compare only the date portion,
+// GT due dates are dates, not times: compare only the date portion,
 // using the local calendar date so "today" matches what the user actually sees.
 
 export function todayDateString(): string {

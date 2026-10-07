@@ -18,8 +18,8 @@ export interface TaskRowProps {
 }
 
 // The checkbox and the row body are separate buttons: clicking the checkbox completes/reopens
-// the task (Phase 5, remote-first via the server), clicking the row opens the read-only
-// detail panel from Phase 4. Row layout follows plan.md section 36: checkbox, title, star on
+// the task (remote-first via the server), clicking the row opens the detail panel.
+// Row layout: checkbox, title, star on
 // the first line; due date; labels.
 export function TaskRow({ task, selected, onSelect, onToggleComplete, toggling }: TaskRowProps) {
   const due = formatDue(task.due);

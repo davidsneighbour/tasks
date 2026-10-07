@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { hasGoogleCredentials } from "../config/env.js";
 import { getSyncState, isSyncing } from "../sync/sync.js";
 
-// Application readiness (auth + sync), distinct from container health (plan.md sections 16, 59).
+// Application readiness (auth + sync), distinct from container health.
 // States: starting, authenticating, syncing, ready, error.
 export async function statusRoutes(app: FastifyInstance) {
   app.get("/api/status", async () => {

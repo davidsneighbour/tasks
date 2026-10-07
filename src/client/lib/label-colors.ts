@@ -1,6 +1,6 @@
 import type { LabelColour } from "@shared/labels";
 
-// Tailwind classes per palette colour (plan.md section 9). Kept as a lookup rather than
+// Tailwind classes per palette colour. Kept as a lookup rather than
 // dynamic class names (e.g. `bg-${colour}-100`) so Tailwind's content scan can see every
 // class literally and doesn't purge them.
 export const LABEL_COLOUR_CLASSES: Record<LabelColour, string> = {

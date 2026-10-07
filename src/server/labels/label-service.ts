@@ -30,7 +30,7 @@ export interface CreateLabelInput {
   icon: LabelIconName;
 }
 
-// Purely local - GT has no concept of labels (plan.md section 9).
+// Purely local - GT has no concept of labels.
 export async function createLabel(input: CreateLabelInput): Promise<LabelDTO> {
   const now = nowIso();
   const [row] = await db
@@ -53,16 +53,15 @@ export async function updateLabel(id: number, input: UpdateLabelInput): Promise<
   return toLabelDTO(row);
 }
 
-// Deletes only the local label and its associations; GT is never touched
-// (plan.md sections 9, 39).
+// Deletes only the local label and its associations; GT is never touched.
 export async function deleteLabel(id: number): Promise<void> {
   const result = await db.delete(labels).where(eq(labels.id, id)).returning({ id: labels.id });
   if (result.length === 0) throw new LabelNotFoundError(id);
 }
 
 // Replaces a task's full label set in one call, matching PUT semantics
-// (plan.md section 30: PUT /api/tasks/:gtTaskId/labels). Purely local - immediate, no GT
-// round trip (plan.md section 26).
+// (PUT /api/tasks/:gtTaskId/labels in api/labels.ts). Purely local - immediate, no GT
+// round trip.
 export async function setTaskLabels(taskGtId: string, labelIds: number[]): Promise<LabelDTO[]> {
   await db.delete(taskLabels).where(eq(taskLabels.taskGtId, taskGtId));
 

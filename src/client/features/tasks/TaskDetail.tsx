@@ -14,7 +14,7 @@ export interface TaskDetailProps {
 }
 
 // Status (via the row checkbox), title, notes, due date, labels, and star are all editable
-// here, each following the same remote-first pattern (plan.md sections 23-26).
+// here, each following the same remote-first pattern.
 export function TaskDetail({ task, onClose, onDelete, onChanged, deleting }: TaskDetailProps) {
   return (
     <aside className="shrink-0 border-t border-border p-4 md:h-full md:min-h-0 md:w-80 md:overflow-y-auto md:border-l md:border-t-0">

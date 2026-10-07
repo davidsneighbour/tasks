@@ -6,7 +6,7 @@ export { MissingGoogleCredentialsError } from "./auth.js";
 export type { GoogleTaskList } from "./task-lists.js";
 export type { CreateTaskInput, GoogleTask, MoveTaskOptions, UpdateTaskInput } from "./tasks.js";
 
-// Everything Google-specific stays behind this interface (plan.md section 47); route handlers
+// Everything Google-specific stays behind this interface; route handlers
 // and the sync service depend on this shape, never on the Google Tasks REST API directly.
 export const googleTasksClient = {
   listTaskLists,

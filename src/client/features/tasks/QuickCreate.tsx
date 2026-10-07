@@ -9,7 +9,7 @@ export interface QuickCreateProps {
   onCreated: () => void;
 }
 
-// Minimum viable quick create (plan.md section 38): title only, Enter to submit.
+// Minimum viable quick create: title only, Enter to submit.
 export function QuickCreate({ taskListGtId: fixedTaskListGtId, onCreated }: QuickCreateProps) {
   const [title, setTitle] = useState("");
   const [taskLists, setTaskLists] = useState<{ gtId: string; title: string }[]>([]);

@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 
 export type FetchState<T> = { status: "loading" } | { status: "error"; message: string } | { status: "ready"; data: T };
 
-// No data-fetching library yet (plan.md keeps the stack deliberately boring); this is enough
-// for the read-only views in Phase 4. Reaches for something heavier only once mutations
-// (Phase 5) need optimistic updates and cache invalidation.
+// No data-fetching library (the stack is kept deliberately boring); this is enough for
+// loading views. Mutations are remote-first, so they refetch rather than update optimistically.
 export function useFetch<T>(fetcher: () => Promise<T>, deps: readonly unknown[]): FetchState<T> {
   const [state, setState] = useState<FetchState<T>>({ status: "loading" });
 

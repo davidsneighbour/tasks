@@ -12,7 +12,7 @@ export interface DueDatePickerProps {
   onChange: () => void;
 }
 
-// GT due dates carry no time component (plan.md section 13), so the picker is date-only.
+// GT due dates carry no time component, so the picker is date-only.
 function parseDueDate(due: string | null): Date | undefined {
   const dateString = dueDateString(due);
   return dateString ? new Date(`${dateString}T00:00:00`) : undefined;

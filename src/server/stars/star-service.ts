@@ -7,7 +7,7 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
-// Purely local, immediate (plan.md sections 10, 26): no GT round trip, and setting a star
+// Purely local, immediate: no GT round trip, and setting a star
 // replaces any existing one rather than allowing more than one at a time.
 export async function setTaskStar(taskGtId: string, star: StarType): Promise<void> {
   const now = nowIso();

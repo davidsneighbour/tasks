@@ -30,7 +30,7 @@ export type SyncResult =
   | { status: "success"; listsAdded: number; listsUpdated: number; listsRemoved: number; tasksAdded: number; tasksUpdated: number; tasksRemoved: number }
   | { status: "error"; message: string };
 
-// Runs the same reconciliation routine as startup (plan.md section 27) - no separate
+// Runs the same reconciliation routine as startup - no separate
 // manual-sync implementation on the server.
 export function syncNow(): Promise<SyncResult> {
   return request("/api/sync", { method: "POST" });

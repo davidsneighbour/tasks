@@ -59,7 +59,7 @@ function googleTask(overrides: GoogleTaskOverrides = {}) {
 }
 
 describe("createTask", () => {
-  it("writes the local cache only after GT confirms the task exists (plan.md section 22)", async () => {
+  it("writes the local cache only after GT confirms the task exists", async () => {
     vi.mocked(googleTasksClient.createTask).mockResolvedValue(googleTask());
 
     const result = await createTask({ taskListGtId: "list-1", title: "Buy milk" });
@@ -103,7 +103,7 @@ describe("updateTask, completeTask, reopenTask", () => {
     expect(result.title).toBe("Buy oat milk");
   });
 
-  it("leaves the local task untouched when GT rejects the update (plan.md section 23)", async () => {
+  it("leaves the local task untouched when GT rejects the update", async () => {
     vi.mocked(googleTasksClient.updateTask).mockRejectedValue(new Error("network blip"));
 
     await expect(updateTask("task-1", { title: "Buy oat milk" })).rejects.toThrow("network blip");
@@ -159,7 +159,7 @@ describe("deleteTask", () => {
     expect(await db.select().from(tasks)).toHaveLength(0);
   });
 
-  it("leaves the local task untouched when GT rejects the delete (plan.md section 25)", async () => {
+  it("leaves the local task untouched when GT rejects the delete", async () => {
     vi.mocked(googleTasksClient.deleteTask).mockRejectedValue(new Error("GT is down"));
 
     await expect(deleteTask("task-1")).rejects.toThrow("GT is down");

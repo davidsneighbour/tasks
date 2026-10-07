@@ -30,7 +30,7 @@ async function requireLocalTaskListId(taskGtId: string): Promise<string> {
 }
 
 // The single place a GT response is written into the cache after a mutation: GT confirms
-// first, the local write happens second, never the other way around (plan.md section 63).
+// first, the local write happens second, never the other way around.
 async function applyGoogleTask(taskListGtId: string, googleTask: GoogleTask): Promise<TaskDTO> {
   const mapped = mapGoogleTask(taskListGtId, googleTask);
   const syncedAt = nowIso();
@@ -64,8 +64,7 @@ export interface CreateTaskInput {
   parentGtId?: string | undefined;
 }
 
-// Remote-first: never create a local row before GT confirms the task exists
-// (plan.md section 22).
+// Remote-first: never create a local row before GT confirms the task exists.
 export async function createTask(input: CreateTaskInput): Promise<TaskDTO> {
   const googleTask = await googleTasksClient.createTask(input.taskListGtId, {
     title: input.title,
@@ -82,14 +81,14 @@ export interface UpdateTaskInput {
   due?: string | null | undefined;
 }
 
-// Remote-first update (plan.md section 23).
+// Remote-first update.
 export async function updateTask(taskGtId: string, input: UpdateTaskInput): Promise<TaskDTO> {
   const taskListGtId = await requireLocalTaskListId(taskGtId);
   const googleTask = await googleTasksClient.updateTask(taskListGtId, taskGtId, input);
   return applyGoogleTask(taskListGtId, googleTask);
 }
 
-// Remote-first complete/reopen (plan.md section 24): the cache is only updated from GT's
+// Remote-first complete/reopen: the cache is only updated from GT's
 // confirmed response, never flipped locally first.
 export async function completeTask(taskGtId: string): Promise<TaskDTO> {
   const taskListGtId = await requireLocalTaskListId(taskGtId);
@@ -103,7 +102,7 @@ export async function reopenTask(taskGtId: string): Promise<TaskDTO> {
   return applyGoogleTask(taskListGtId, googleTask);
 }
 
-// Remote-first delete: a GT failure leaves the local task untouched (plan.md section 25).
+// Remote-first delete: a GT failure leaves the local task untouched.
 export async function deleteTask(taskGtId: string): Promise<void> {
   const taskListGtId = await requireLocalTaskListId(taskGtId);
   await googleTasksClient.deleteTask(taskListGtId, taskGtId);

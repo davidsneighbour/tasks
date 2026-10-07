@@ -19,7 +19,7 @@ await app.register(starsRoutes);
 await app.register(statusRoutes);
 await app.register(syncRoutes);
 
-// Container health: must not depend on Google connectivity (plan.md section 59).
+// Container health: must not depend on Google connectivity.
 app.get("/health", async () => ({ status: "ok" }));
 
 if (process.env["NODE_ENV"] === "production") {
@@ -44,7 +44,7 @@ try {
 }
 
 // Serve immediately and expose progress through /api/status rather than blocking startup on
-// reconciliation (plan.md section 16's "better diagnostics" option).
+// reconciliation, so a slow or failing sync is visible instead of a server that never starts.
 if (hasGoogleCredentials()) {
   runSync()
     .then((result) => {

@@ -1,6 +1,6 @@
 # Tasks (T)
 
-A local-first PWA providing a richer interface on top of Google Tasks. See [scratch/plan.md](scratch/plan.md) for the full design, and [AGENTS.md](AGENTS.md) for agent working instructions.
+A local-first PWA providing a richer interface on top of Google Tasks. See [AGENTS.md](AGENTS.md) for the project overview and agent working instructions.
 
 ## Development
 
@@ -10,6 +10,12 @@ npm install
 npm run db:migrate
 npm run dev
 ```
+
+## Project layout
+
+* [src/server/](src/server/) — Fastify server: Google Tasks client ([google/](src/server/google/)), sync and reconciliation ([sync/](src/server/sync/)), SQLite schema and migrations ([db/](src/server/db/)), task, label, and star services, views, and API routes ([api/](src/server/api/)).
+* [src/client/](src/client/) — React PWA: app shell, task list and detail panel, label and star pickers, and sync status.
+* [src/shared/](src/shared/) — types and constants shared by the server and the client (API types, label palette, star types).
 
 ## Container
 

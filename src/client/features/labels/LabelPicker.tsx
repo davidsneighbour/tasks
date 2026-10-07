@@ -11,7 +11,7 @@ export interface LabelPickerProps {
   onChange: () => void;
 }
 
-// Local-only, immediate (plan.md section 26): no GT round trip, just a SQLite write.
+// Local-only, immediate: no GT round trip, just a SQLite write.
 export function LabelPicker({ taskGtId, currentLabels, onChange }: LabelPickerProps) {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);

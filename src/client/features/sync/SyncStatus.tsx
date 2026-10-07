@@ -16,7 +16,7 @@ function summarizeError(message: string): string {
   return firstLine.length > MAX_ERROR_LENGTH ? `${firstLine.slice(0, MAX_ERROR_LENGTH)}…` : firstLine;
 }
 
-// Sidebar/footer manual sync (plan.md section 27): shows current state, last successful sync
+// Sidebar/footer manual sync: shows current state, last successful sync
 // time, and any error. The button runs the exact same POST /api/sync the startup sync uses -
 // no separate implementation.
 export function SyncStatus() {

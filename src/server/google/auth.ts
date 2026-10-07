@@ -23,7 +23,7 @@ export function createOAuth2Client(): OAuth2Client {
 
 let cachedClient: OAuth2Client | undefined;
 
-// The server owns authentication end-to-end (plan.md section 5); nothing here is ever sent
+// The server owns authentication end-to-end; nothing here is ever sent
 // to the browser.
 export function getAuthorizedClient(): OAuth2Client {
   if (!config.google.refreshToken) {

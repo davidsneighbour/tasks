@@ -11,7 +11,7 @@ export interface StarPickerProps {
   onChange: () => void;
 }
 
-// A task has no star or exactly one star (plan.md section 10) - immediate, local only
+// A task has no star or exactly one star - immediate, local only
 // (section 26), no GT round trip.
 export function StarPicker({ taskGtId, currentStar, onChange }: StarPickerProps) {
   const [saving, setSaving] = useState(false);

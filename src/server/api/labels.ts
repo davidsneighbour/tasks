@@ -31,8 +31,7 @@ function sendLabelServiceError(reply: FastifyReply, error: unknown): void {
   throw error;
 }
 
-// Purely local CRUD - labels have no GT counterpart, so there is no GoogleApiError path here
-// (plan.md section 9).
+// Purely local CRUD - labels have no GT counterpart, so there is no GoogleApiError path here.
 export async function labelsRoutes(app: FastifyInstance) {
   app.get("/api/labels", async () => ({ labels: await labelService.listLabels() }));
 

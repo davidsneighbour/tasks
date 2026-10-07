@@ -3,8 +3,7 @@ import type { StarType } from "../../shared/stars.js";
 import { db } from "../db/client.js";
 import { taskStars, tasks } from "../db/schema.js";
 
-// Tasks where local star metadata exists, optionally filtered to one star type
-// (plan.md section 49).
+// Tasks where local star metadata exists, optionally filtered to one star type.
 export async function getStarredTasks(star?: StarType) {
   const rows = await db
     .select({ task: tasks })

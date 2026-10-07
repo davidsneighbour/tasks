@@ -45,7 +45,7 @@ describe("runSync", () => {
     expect(await getSyncState()).toMatchObject({ status: "success" });
   });
 
-  it("removes local records once GT no longer reports them (plan.md section 18)", async () => {
+  it("removes local records once GT no longer reports them", async () => {
     vi.mocked(googleTasksClient.listTaskLists).mockResolvedValue([]);
     vi.mocked(googleTasksClient.listTasks).mockResolvedValue([]);
 
@@ -56,7 +56,7 @@ describe("runSync", () => {
     expect(await db.select().from(tasks)).toHaveLength(0);
   });
 
-  it("never deletes local records when the remote fetch fails partway through (plan.md section 44)", async () => {
+  it("never deletes local records when the remote fetch fails partway through", async () => {
     vi.mocked(googleTasksClient.listTaskLists).mockResolvedValue([
       { id: "list-1", title: "Personal", updated: "2024-01-01T00:00:00.000Z" },
     ]);

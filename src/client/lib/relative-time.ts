@@ -1,4 +1,4 @@
-// "Synced 14 seconds ago" (plan.md section 27).
+// "Synced 14 seconds ago".
 export function formatRelativeTime(iso: string, now: Date = new Date()): string {
   const seconds = Math.max(0, Math.round((now.getTime() - new Date(iso).getTime()) / 1000));
 

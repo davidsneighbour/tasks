@@ -1,7 +1,7 @@
 import type { GoogleTask, GoogleTaskList } from "../google/index.js";
 
 // Pure diff logic: no I/O, no SQLite, no Google API. Given what's remote and what's local,
-// decide what changes to apply. This is the core of the system (plan.md section 14) and is
+// decide what changes to apply. This is the core of the system and is
 // exercised directly by reconciliation.spec.ts.
 
 export interface RemoteTaskListRecord {
@@ -26,8 +26,7 @@ export function mapGoogleTaskList(list: GoogleTaskList): RemoteTaskListRecord {
   return { gtId: list.id, title: list.title, gtUpdatedAt: list.updated };
 }
 
-// GT is authoritative: remote wins whenever it disagrees with the local cache
-// (plan.md section 2.1, 19).
+// GT is authoritative: remote wins whenever it disagrees with the local cache.
 export function diffTaskLists(remote: RemoteTaskListRecord[], local: LocalTaskListRecord[]): TaskListDiff {
   const localByGtId = new Map(local.map((row) => [row.gtId, row]));
   const remoteGtIds = new Set(remote.map((row) => row.gtId));
@@ -75,7 +74,7 @@ export interface TaskDiff {
 }
 
 // A task explicitly marked deleted by GT (only visible with showDeleted=true) is treated as
-// absent, never upserted (plan.md section 64).
+// absent, never upserted.
 export function mapGoogleTask(taskListGtId: string, task: GoogleTask): RemoteTaskRecord | null {
   if (task.deleted) {
     return null;

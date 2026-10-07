@@ -1,7 +1,7 @@
 import type { LabelColour, LabelIconName } from "./labels.js";
 import type { StarType } from "./stars.js";
 
-// Types shared between src/client and src/server for the T API (plan.md section 30). The
+// Types shared between src/client and src/server for the T API. The
 // server never exposes raw Google Tasks or internal row shapes across this boundary.
 
 export interface TaskListDTO {

@@ -49,7 +49,7 @@ export async function getSyncState(): Promise<SyncStateRow> {
 }
 
 // Single SQLite transaction: either every upsert/delete for this reconciliation lands, or
-// none of it does (plan.md section 45).
+// none of it does.
 async function applyReconciliation(listDiff: TaskListDiff, taskDiff: TaskDiff): Promise<SyncCounts> {
   return db.transaction(async (tx) => {
     const syncedAt = nowIso();
@@ -98,7 +98,7 @@ async function performSync(): Promise<SyncResult> {
 
   try {
     // Fetch everything before writing anything: a partial remote fetch must never cause a
-    // deletion (plan.md section 44).
+    // deletion.
     const remoteLists = await fetchRemoteTaskLists();
     const remoteTasks = await fetchRemoteTasks(remoteLists.map((list) => list.gtId));
 
@@ -120,7 +120,7 @@ async function performSync(): Promise<SyncResult> {
   }
 }
 
-// Process-level mutex (plan.md section 28): no distributed locking needed since there is one
+// Process-level mutex: no distributed locking needed since there is one
 // process. A concurrent call gets the in-flight sync's result instead of starting a second one.
 let inFlightSync: Promise<SyncResult> | null = null;
 

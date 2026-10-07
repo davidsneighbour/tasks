@@ -92,7 +92,7 @@ describe("diffTasks", () => {
   });
 
   it("never deletes based on a partial remote fetch: an empty remote list here would mean a caller bug, not this function's job to guess", () => {
-    // diffTasks trusts its `remote` argument completely; the safety rule (plan.md section 44)
+    // diffTasks trusts its `remote` argument completely; the safety rule
     // that a failed/partial fetch must never reach diffTasks lives in sync.ts's try/catch,
     // which never calls diffTasks unless every fetch above it succeeded.
     const diff = diffTasks([remoteTask()], [localTask(), localTask({ gtId: "task-2", etag: "etag-9" })]);

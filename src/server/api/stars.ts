@@ -13,7 +13,7 @@ function sendStarServiceError(reply: FastifyReply, error: unknown): void {
   throw error;
 }
 
-// Purely local, immediate (plan.md sections 10, 26) - no GT round trip.
+// Purely local, immediate - no GT round trip.
 export async function starsRoutes(app: FastifyInstance) {
   app.put<{ Params: { gtTaskId: string } }>("/api/tasks/:gtTaskId/star", async (request, reply) => {
     try {

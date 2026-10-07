@@ -11,7 +11,7 @@ interface TaskListsResponse {
   nextPageToken?: string;
 }
 
-// Paginates to completion (plan.md section 20): a sync/list that only read the first page
+// Paginates to completion: a sync/list that only read the first page
 // would be incorrect.
 export async function listTaskLists(): Promise<GoogleTaskList[]> {
   const lists: GoogleTaskList[] = [];

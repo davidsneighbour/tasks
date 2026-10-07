@@ -108,7 +108,7 @@ describe("setTaskLabels / getLabelsForTasks", () => {
     expect(result).toEqual([personal]);
   });
 
-  it("cascade-deletes label associations when the task's GT cache row is deleted (plan.md section 2.2)", async () => {
+  it("cascade-deletes label associations when the task's GT cache row is deleted", async () => {
     const urgent = await createLabel({ name: "Urgent", colour: "red", icon: "triangle-alert" });
     await setTaskLabels("task-1", [urgent.id]);
 

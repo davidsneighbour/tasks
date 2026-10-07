@@ -21,7 +21,7 @@ interface TasksResponse {
 }
 
 // Must explicitly request completed/hidden/deleted tasks and paginate to completion, or
-// reconciliation cannot correctly detect what disappeared from GT (plan.md sections 20, 64).
+// reconciliation cannot correctly detect what disappeared from GT.
 export async function listTasks(taskListId: string): Promise<GoogleTask[]> {
   const tasks: GoogleTask[] = [];
   let pageToken: string | undefined;

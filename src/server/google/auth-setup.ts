@@ -5,7 +5,7 @@ import { config } from "../config/env.js";
 import { TASKS_SCOPE } from "./auth.js";
 
 // The sole purpose of this script is obtaining and storing GOOGLE_REFRESH_TOKEN
-// (plan.md section 5). It is a one-off local setup command, not part of the running app.
+//. It is a one-off local setup command, not part of the running app.
 
 function requireEnv(name: string, value: string | undefined): string {
   if (!value) {

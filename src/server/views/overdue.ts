@@ -3,7 +3,7 @@ import { db } from "../db/client.js";
 import { tasks } from "../db/schema.js";
 import { dueDateString, todayDateString } from "./date.js";
 
-// Incomplete tasks with due < today, using the local calendar date (plan.md section 13).
+// Incomplete tasks with due < today, using the local calendar date.
 export async function getOverdueTasks() {
   const today = todayDateString();
   const incomplete = await db.select().from(tasks).where(eq(tasks.status, "needsAction"));
