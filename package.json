@@ -34,7 +34,7 @@
     "clsx": "^2.1.1",
     "date-fns": "4.4.0",
     "drizzle-orm": "^0.45.3",
-    "fastify": "^5.12.5",
+    "fastify": "^5.12.6",
     "google-auth-library": "^11.0.2",
     "lucide-react": "^1.52.0",
     "radix-ui": "1.7.0",
